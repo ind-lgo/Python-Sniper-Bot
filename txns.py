@@ -21,7 +21,9 @@ class Txn_bot():
         return w3
 
     def set_address(self):
-        return(keys.metamask_address, keys.metamask_private_key)
+        with open("./keys.json") as f:
+            keys = json.load(f)
+        return(keys["metamask_address"], keys["metamask_private_key"])
 
     def get_token_decimals(self):
         return self.token_contract.functions.decimals().call()
