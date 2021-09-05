@@ -11,8 +11,8 @@ args = parser.parse_args()
 
 
 quantity = float(args.amount)
-slippage = int(args.slippage) #%
-gas_price = 6 * (10**9) #Gwei, bsc-mainnet=5, eth-mainnet=https://www.gasnow.org/, eth-rinkeby=1
+slippage = int(args.slippage)
+gas_price = 6 * (10**9) 
 swap = [1]
 token_address=args.token
 
@@ -24,7 +24,6 @@ bot = Txn_bot(
     slippage=slippage,
     gas_price=gas_price,
     swap=swap)
-
 
 
 if HoneyPotChecker(Token_Address=token_address).Is_Honeypot() == False:
