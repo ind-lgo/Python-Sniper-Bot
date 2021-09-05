@@ -1,4 +1,3 @@
-from re import S
 from requests_html import HTMLSession
 import time 
 
