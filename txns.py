@@ -1,6 +1,5 @@
 from web3 import Web3
 import json
-import keys
 
 class Txn_bot():
     def __init__(self, token_address, quantity, slippage, gas_price, swap):
