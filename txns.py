@@ -22,7 +22,7 @@ class Txn_bot():
     def set_address(self):
         with open("./keys.json") as f:
             keys = json.load(f)
-         if len(keys["metamask_address"]) <= 42:
+        if len(keys["metamask_address"]) <= 42:
             print("Set your Address in the key.json file!")
             exit()
         if len(keys.["metamask_private_key"]) <= 42:
