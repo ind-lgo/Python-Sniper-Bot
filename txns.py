@@ -25,7 +25,7 @@ class Txn_bot():
         if len(keys["metamask_address"]) <= 42:
             print("Set your Address in the key.json file!")
             exit()
-        if len(keys.["metamask_private_key"]) <= 42:
+        if len(keys["metamask_private_key"]) <= 42:
             print("Set your PrivateKey in the key.json file!")
             exit()
         return(keys["metamask_address"], keys["metamask_private_key"])
