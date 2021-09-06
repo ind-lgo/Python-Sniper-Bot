@@ -22,12 +22,10 @@ class Txn_bot():
     def set_address(self):
         with open("./keys.json") as f:
             keys = json.load(f)
-        if len(keys["metamask_address"]) <= 42:
+        if len(keys["metamask_address"]) <= 41:
             print("Set your Address in the keys.json file!")
-            exit()
         if len(keys["metamask_private_key"]) <= 42:
             print("Set your PrivateKey in the keys.json file!")
-            exit()
         return(keys["metamask_address"], keys["metamask_private_key"])
 
     def get_token_decimals(self):

@@ -1,3 +1,2 @@
 web3
 halo
-requests_html
