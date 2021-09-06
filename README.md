@@ -1,13 +1,16 @@
 # Pancakeswap_BSC_Sniper_Bot
-![alt text](https://trading-tigers.com/assets/img/TradingTigers.png)  
+![TradingTigers](https://trading-tigers.com/assets/img/TradingTigers.png)  
 Web3 Pancakeswap Sniper bot written in python3, Please note the license conditions!  
 The first Binance Smart Chain sniper bot with Honeypot checker.  
 # Infos
 If you have 100 Tigs on your BSC address, the bot will check for liquidity every 0.1 seconds, if you have less than 100 TIGS then only every 5 seconds!  
 If you are not familiar with Python please have a look at Releases!  
 
+
 # [TradingTigers Token @BSC](https://bscscan.com/token/0x34faa80fec0233e045ed4737cc152a71e490e2e3)  
-  
+![Sniper Preview](https://trading-tigers.com/assets/img/preview01.png)  
+
+
 Setup your Address and secret key in keys.py 
 
 Install in Python:
