@@ -28,7 +28,8 @@ Here are all options:
 ```
 
 
-# Install in Python
+# Install Python
+First of all, you need install Python3+
 
 ```python
 python3 -m pip install -r requirements.txt
