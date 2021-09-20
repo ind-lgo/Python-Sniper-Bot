@@ -36,7 +36,7 @@ TXN = int(args.txamount)
 SNIPEquantity = (float(args.amount) / TXN)
 slippage = int(args.slippage)
 token=args.token
-checkHoney = True
+checkHoney = args.honeypot
 Timer = float(Time)
 
 print("")
