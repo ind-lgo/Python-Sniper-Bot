@@ -19,7 +19,6 @@ token_address=args.token
 
 bot = Txn_bot(
     token_address=token_address,
-    token_addressOut=None,
     quantity=quantity,
     slippage=slippage,
     gas_price=gas_price,
