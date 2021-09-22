@@ -7,7 +7,7 @@ Web3 Pancakeswap Sniper&& Take Profit bot written in python3, Please note the li
 If you have 100 Tigs on your BSC address, the bot will check for liquidity every 0.1 seconds,  if you have less than 100 TIGS then only every 5 seconds!  
 
 ## [TradingTigers Token @BSC](https://bscscan.com/token/0x34faa80fec0233e045ed4737cc152a71e490e2e3)  
-![Sniper](https://trading-tigers.com/assets/img/GUI-Preview01.png)  
+![Sniper](https://trading-tigers.com/assets/img/Gui-Preview01.png)  
 
 # Download
 If you are not familiar with Python please have a look at [Releases](https://github.com/Trading-Tiger/Pancakeswap_BSC_Sniper_Bot/releases), there you can download Windows executable.
