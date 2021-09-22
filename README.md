@@ -30,7 +30,7 @@ Here are all options:
 ```
 
 
-# Install Python
+# Install
 First of all, you need install Python3+
 
 Run on Android you need Install [Termux](https://termux.com/)  
