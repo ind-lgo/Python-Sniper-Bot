@@ -18,15 +18,15 @@ Edit your Start_Sniper.bat or Start_fastBuy.bat, insert your Token Address want 
 You don't need Administrator rights!
 
 Here are all options:
-```shell
+```python3
 '-t', '--token', Token for snipe e.g. "-t 0xc87b88aafb95f0b88c3a74fc96344e4bccab6bde"
 '-a', '--amount', float, Amount in Bnb to snipe e.g. "-a 0.1"
 '-s', '--slippage', default=10, slippage in % "-s 10"
 '-tx', '--txamount', default=1, how mutch tx you want to send? It Split your BNB Amount in e.g. "-tx 5"
 '-swap', '--swap', default=[1], Witch Swap? e.g. "-swap [1]" for Panackeswap
 '-hp', '--honeypot', default=True, check if your token to buy is a Honeypot
--tp', '--takeprofit', default=0,  Percentage TakeProfit from your input BNB amount, if 0 then not used. e.g. "-tp 50" '
--wb', '--awaitBlocks', default=0, Await Blocks before sending BUY Transaction, if 0 then not used. e.g. "-ab 50" ')
+'-tp', '--takeprofit', default=0,  Percentage TakeProfit from your input BNB amount, if 0 then not used. e.g. "-tp 50" '
+'-wb', '--awaitBlocks', default=0, Await Blocks before sending BUY Transaction, if 0 then not used. e.g. "-ab 50" ')
 ```
 
 
