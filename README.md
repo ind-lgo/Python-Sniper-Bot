@@ -33,13 +33,25 @@ Here are all options:
 # Install Python
 First of all, you need install Python3+
 
+Run on Android you need Install [Termux](https://termux.com/)  
+```termux
+pkg install python git
+```
+
+Clone Repo:  
+```shell
+git clone https://github.com/Trading-Tiger/Pancakeswap_BSC_Sniper_Bot
+cd Pancakeswap_BSC_Sniper_Bot
+```
+
+Install Requirements:  
 ```python
-python3 -m pip install -r requirements.txt
+python -m pip install -r requirements.txt
 ```  
 
 Start Sniper:  
 ```python
-python3 Sniper.py -t <TOKEN_ADDRESS> -a <AMOUNT> -s <SLIPPAGE> -tx <TXAMOUNT>
-python3 Sniper.py -t 0x34faa80fec0233e045ed4737cc152a71e490e2e3 -a 0.1 -s 20 -tx 3
+python Sniper.py -t <TOKEN_ADDRESS> -a <AMOUNT> -s <SLIPPAGE> -tx <TXAMOUNT> -wb <BLOCKS WAIT BEFORE BUY> -tp <TAKE PROFIT IN PERCENT>
+python Sniper.py -t 0x34faa80fec0233e045ed4737cc152a71e490e2e3 -a 0.1 -s 20 -tx 3 -wb 10 -tp 50
 ```  
 
