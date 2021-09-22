@@ -30,7 +30,7 @@ if checkHoney == False:
     BUY = True
 
 
-if BUY = True:
+if BUY == True:
     quantity = quantity / TXN
     for i in range(TXN):
         bot = Txn_bot(token_address=token_address, quantity=quantity, slippage=slippage,gas_price=gas_price,swap=swap)
