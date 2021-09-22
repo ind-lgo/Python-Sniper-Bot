@@ -26,7 +26,7 @@ if checkHoney == True:
     isHoneypot = HoneyPotChecker(Token_Address=token_address).Is_Honeypot()
     if isHoneypot == False:
         BUY = True
-if checkHoney == False:
+else:
     BUY = True
 
 
