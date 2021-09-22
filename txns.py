@@ -1,194 +1,173 @@
+from web3 import Web3
+import json
 
-from txns import Txn_bot
-from time import sleep
-import argparse
-from honeypotChecker import HoneyPotChecker
-from halo import Halo
-from threading import Thread
+class Txn_bot():
+    def __init__(self, token_address, quantity, slippage, gas_price, swap):
+        self.w3 = self.connect()
+        self.address, self.private_key = self.set_address()
+        self.token_address = Web3.toChecksumAddress(token_address)
+        self.token_contract = self.set_token_contract()
+        self.utils_address, self.utils = self.set_Utils()
+        self.router_address, self.router = self.set_router()
+        self.quantity = quantity 
+        self.slippage = 1 - (slippage/100)
+        self.gas_price = gas_price
+        self.SWAP = swap
+        self.WBNB = Web3.toChecksumAddress("0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c")
 
-parser = argparse.ArgumentParser(description='Set your Token and Amount example: "sniper.py -t 0x34faa80fec0233e045ed4737cc152a71e490e2e3 -a 0.2 -s 15"')
-parser.add_argument('-t', '--token', help='str, Token for snipe e.g. "-t 0x34faa80fec0233e045ed4737cc152a71e490e2e3"')
-parser.add_argument('-a', '--amount', help='float, Amount in Bnb to snipe e.g. "-a 0.1"')
-parser.add_argument('-s', '--slippage', default=10, nargs="?", const=1, type=int, help='int, slippage in % "-s 10"')
-parser.add_argument('-tx', '--txamount', default=1, nargs="?", const=1, type=int, help='int, how mutch tx you want to send? It Split your BNB Amount in e.g. "-tx 5"')
-parser.add_argument('-hp', '--honeypot', default=True, nargs="?", const=True, type=bool, help='bool, check if your token to buy is a Honeypot, e.g. "-hp True"')
-parser.add_argument('-swap', '--swap', default=[1], type=list, help='list, Witch Swap? e.g. "-swap [1] for Panackeswap"')
-parser.add_argument('-tp', '--takeprofit', default=0, nargs="?", const=True, type=int, help='int, Percentage TakeProfit from your input BNB amount, if 0 then not used. e.g. "-tp 50" ')
-parser.add_argument('-wb', '--awaitBlocks', default=0, nargs="?", const=True, type=int, help='int, Await Blocks bevore sending BUY Transaction, if 0 then not used. e.g. "-ab 50" ')
-args = parser.parse_args()
+    def connect(self):
+        w3 = Web3(Web3.HTTPProvider("https://bsc-dataseed.binance.org/"))
+        return w3
 
+    def set_address(self):
+        with open("./keys.json") as f:
+            keys = json.load(f)
+        if len(keys["metamask_address"]) <= 41:
+            print("Set your Address in the keys.json file!")
+        if len(keys["metamask_private_key"]) <= 42:
+            print("Set your PrivateKey in the keys.json file!")
+        return(keys["metamask_address"], keys["metamask_private_key"])
 
+    def get_token_decimals(self):
+        return self.token_contract.functions.decimals().call()
 
+    def set_Utils(self):
+        Utils_address = Web3.toChecksumAddress("0x09029d284Eb0f9D28ec57a333062Ed1115e45771") 
+        with open("./abis/DEX_Utils.json") as f:
+            contract_abi = json.load(f)
+        utils = self.w3.eth.contract(address=Utils_address, abi=contract_abi)
+        return (Utils_address, utils)
 
+    def getBlockHigh(self):
+        return self.w3.eth.block_number
 
+    def set_router(self):
+        router_address = Web3.toChecksumAddress("0x5F16809FF1705042da1AB84145D2C20d7D123803") 
+        with open("./abis/TIGSRouterV1.json") as f:
+            contract_abi = json.load(f)
+        router = self.w3.eth.contract(address=router_address, abi=contract_abi)
+        return (router_address, router)
 
-TXN = int(args.txamount)
-SNIPEquantity = (float(args.amount) / TXN)
-slippage = int(args.slippage)
-token=args.token
-checkHoney = bool(args.honeypot)
-swap = args.swap
-takeprofit = int(args.takeprofit)
-waitingBlocks = int(args.awaitBlocks)
-gas_price = 6 * (10**9)
+    def set_token_contract(self):
+        with open("./abis/bep20_abi_token.json") as f:
+            contract_abi = json.load(f)
+        token_contract = self.w3.eth.contract(address=self.token_address, abi=contract_abi)
+        return token_contract
 
-TIGS = Txn_bot(token_address="0x34faa80fec0233e045ed4737cc152a71e490e2e3", quantity=0, slippage=slippage, gas_price=gas_price, swap=swap)
-TIGSBALANCE = TIGS.get_token_balance()
-
- 
-print("")
-if TIGSBALANCE >= 100:
-    Time = 0.1
-    print("Welcome Premium Tiger!\nSet Checktime to " + str(Time) + " seconds")
-else:
-    Time = 5
-    print("Welcome Tiger Buy 100 TIGS to get faster checktime.\nSet Checktime to " + str(Time) + " seconds")
-
-Timer = float(Time)
-
-def calcProfitExit():
-    a = ((SNIPEquantity * TXN) * takeprofit) / 100
-    b = a + (SNIPEquantity * TXN)
-    return b 
-    
-profit = "not activated"
-if takeprofit != 0: 
-    profit = calcProfitExit() 
-else:
-    profit = 0
-del TIGS, TIGSBALANCE
-
-
-print("")
-print("Start Sniper with following arguments")
-print("---------------------------------------------------")
-print("Amount for Buy:", str(args.amount) , "BNB")
-print("Token to Snipe :", args.token)
-print("Slippage :", str(args.slippage) + "%")
-print("Transaction to send:", str(args.txamount))
-print("Amount per transaction :", str(SNIPEquantity))
-print("Await Blocks before buy :", str(waitingBlocks))
-print("Take Profit Percent :", str(takeprofit))
-print("Min Output from Take Profit:",str(profit))
-print("---------------------------------------------------")
+    def get_token_balance(self): 
+        return self.token_contract.functions.balanceOf(self.address).call() / (10 ** self.token_contract.functions.decimals().call())
 
 
-def checkIsHoneypot():
-    isHoney = HoneyPotChecker(token).Is_Honeypot()
-    return isHoney
+    def amountsOut_buy(self):
+        Amount = self.utils.functions.getAmountsOut(
+            int((self.quantity * (10** 18)) * self.slippage),
+            [self.WBNB, self.token_address],
+            self.SWAP
+            ).call()
+        return Amount
+
+    def amountsOut_sell(self):
+        Amount = self.utils.functions.getAmountsOut(
+            int((self.quantity * (10** self.get_token_decimals())) * self.slippage),
+            [self.token_address, self.WBNB],
+            self.SWAP
+            ).call()
+        return Amount
+
+    def amountsOut_sellWithoutSlipp(self):
+        Amount = self.utils.functions.getAmountsOut(
+            int(self.quantity * (10** self.get_token_decimals())),
+            [self.token_address, self.WBNB],
+            self.SWAP
+            ).call()
+        return Amount
+
+    def get_amounts_out_buy(self):
+        Amount = self.utils.functions.getAmountsOut(
+            int(self.quantity * self.slippage),
+            [self.WBNB, self.token_address],
+            self.SWAP
+            ).call()
+        return Amount
 
 
-def checkProfit():
-    spinner = Halo(text='Checking Profit', spinner='dots')
-    spinner.start()
-    pbot = Txn_bot(
-                    token_address=token,
-                    quantity=SNIPEquantity,
-                    slippage=slippage,
-                    gas_price=gas_price,
-                    swap=swap
-                    )
-    pbot.approve()
-    tq = pbot.get_token_balance()
-    cbot = Txn_bot(
-                    token_address=token,
-                    quantity=tq,
-                    slippage=slippage,
-                    gas_price=gas_price,
-                    swap=swap
-                    )
-    tokenQuantity = tq / TXN
-    #print("Waiting for Profit...")
-    while True:
-        sleep(Timer)
-        try:
-            currentProfit = (cbot.amountsOut_sellWithoutSlipp()[1] /(10**18))
-            #print("\nCurrent Output from your Tokens", round(currentProfit,4), end="\r")
-            if currentProfit >= profit:
-                #print("\nProfit reached, Sell now all Tokens.")
-                spinner.stop()
-                for i in range(TXN):
-                    sbot = Txn_bot(token_address=token, quantity=tokenQuantity, slippage=slippage, gas_price=gas_price, swap=swap)
-                    sleep(0.1)
-                    sbot.sell_token()
-                break
-        except Exception as e:
-            print(e)
-            break
+    def get_amounts_out_sell(self):
+        Amount = self.utils.functions.getAmountsOut(
+            int(self.quantity * self.slippage),
+            [self.token_address, self.WBNB],
+            self.SWAP
+            ).call()
+        return Amount
 
-          
-def waitBlocks():
-    spinner = Halo(text='Waiting Blocks', spinner='dots')
-    spinner.start()
-    blocksbot = Txn_bot(token_address=token, quantity=0, slippage=0, gas_price=gas_price, swap=swap)
-    waitForHigh = int(blocksbot.getBlockHigh()) + waitingBlocks
-    while True:
-        try:
-            sleep(0.8)
-            currentBlock = blocksbot.getBlockHigh()
-            if waitForHigh <= currentBlock:
-                if checkHoney == True:
-                    T = checkIsHoneypot()
-                else:
-                    T = False
-                if T == False:
-                    print("\nOK, your Token is not a honeypot!")
-                    spinner.stop()
-                    buy()
-                    break
-                else:
-                    print("\n",token, "is current a Honeypot Token!")
-                    break
-        except Exception as e:
-            print(e)
-            break
+
+    def buy_token(self):
+        self.quantity = self.quantity * (10 ** 18)
+        txn = self.router.functions.makeBNBTokenSwap(
+            int(self.get_amounts_out_buy()[1]),
+            [self.WBNB, self.token_address],
+            self.SWAP,
+            self.address, 
+        ).buildTransaction(
+            {'from': self.address, 
+            'gas': 780000,
+            'gasPrice': self.gas_price,
+            'nonce': self.w3.eth.getTransactionCount(self.address), 
+            'value': int(self.quantity)}
+            )
+        signed_txn = self.w3.eth.account.sign_transaction(
+            txn,
+            self.private_key
+        )
+        txn = self.w3.eth.sendRawTransaction(signed_txn.rawTransaction)
+        print("\nTX Hash:",txn.hex())
+        txn_receipt = self.w3.eth.waitForTransactionReceipt(txn)
+        if txn_receipt["status"] == 1: print("\nTransaction Successfull!")
+        else: print("\nTransaction Faild!")
 
 
 
-def buy():
-    spinner = Halo(text='BUY Tokens', spinner='dots')
-    spinner.start()
-    
-    try:
-        print("\nOK, BUY with", TXN, "Transactions, Good luck")
-        for i in range(TXN):
-            try:
-                bot = Txn_bot(token_address=token, quantity=SNIPEquantity, slippage=slippage, gas_price=gas_price, swap=swap)
-                sleep(0.1)
-                bot.buy_token()
-            except Exception as e:
-                print(e)
-        spinner.stop()
-        if profit != 0:
-            checkProfit()
-    except Exception as e:
-        print(e)
-    
+    def approve(self):
+        txn = self.token_contract.functions.approve(
+            self.router_address,
+            115792089237316195423570985008687907853269984665640564039457584007913129639935 # Max Approve
+        ).buildTransaction(
+            {'from': self.address, 
+            'gas': 100000,
+            'gasPrice': self.gas_price,
+            'nonce': self.w3.eth.getTransactionCount(self.address), 
+            'value': 0}
+            )
+        signed_txn = self.w3.eth.account.sign_transaction(
+            txn,
+            self.private_key
+        )
+        txn = self.w3.eth.sendRawTransaction(signed_txn.rawTransaction)
+        print("\nApprove :",txn.hex())
+        txn_receipt = self.w3.eth.waitForTransactionReceipt(txn)   
 
 
-def Snip():
-    spinner = Halo(text='Waiting for Liquidity', spinner='dots')
-    spinner.start()
-    sbot = Txn_bot(token_address=token, quantity=SNIPEquantity, slippage=slippage, gas_price=gas_price, swap=swap)
-    while True:
-        sleep(Timer)
-        try:
-            print(f"\nMin Output from {SNIPEquantity} BNB:",sbot.amountsOut_buy()[1] / (10 ** sbot.get_token_decimals()))
-            try:
-                spinner.stop()
-                waitBlocks()
-                break
-            except Exception as e:
-                print(e)
-                break
-        except:
-            pass
-    
-
-Snip()
-
-
-
-
-
-
+    def sell_token(self):
+        self.quantity = int(self.quantity * (10 ** self.token_contract.functions.decimals().call()))
+        txn = self.router.functions.makeTokenBNBSwap(
+            int(self.quantity),
+            int(self.get_amounts_out_sell()[1]),
+            [self.token_address, self.WBNB],
+            self.SWAP,
+            self.address, 
+        ).buildTransaction(
+            {'from': self.address, 
+            'gas': 750000,
+            'gasPrice': self.gas_price,
+            'nonce': self.w3.eth.getTransactionCount(self.address), 
+            'value': 0}
+            )
+        signed_txn = self.w3.eth.account.sign_transaction(
+            txn,
+            self.private_key
+        )
+        txn = self.w3.eth.sendRawTransaction(signed_txn.rawTransaction)
+        print("\nSELL TOKENS :",txn.hex())
+        txn_receipt = self.w3.eth.waitForTransactionReceipt(txn)
+        if txn_receipt["status"] == 1: print("\nTransaction Successfull!")
+        else: print("\nTransaction Faild!")
+        #print(txn_receipt)
