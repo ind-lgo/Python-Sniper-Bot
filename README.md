@@ -51,7 +51,7 @@ python -m pip install -r requirements.txt
 
 Start Sniper:  
 ```python
-python Sniper.py -t <TOKEN_ADDRESS> -a <AMOUNT> -s <SLIPPAGE> -tx <TXAMOUNT> -wb <BLOCKS WAIT BEFORE BUY> -tp <TAKE PROFIT IN PERCENT>
-python Sniper.py -t 0x34faa80fec0233e045ed4737cc152a71e490e2e3 -a 0.1 -s 20 -tx 3 -wb 10 -tp 50
+python Sniper.py -t <TOKEN_ADDRESS> -a <AMOUNT> -s <SLIPPAGE> -tx <TXAMOUNT> -hp <CHECKHONEYPOT True/False> -wb <BLOCKS WAIT BEFORE BUY> -tp <TAKE PROFIT IN PERCENT>
+python Sniper.py -t 0x34faa80fec0233e045ed4737cc152a71e490e2e3 -a 0.1 -s 20 -tx 3 -hp True -wb 10 -tp 50
 ```  
 
