@@ -2,6 +2,7 @@ from web3 import Web3
 import json
 
 class Txn_bot():
+
     def __init__(self, token_address, quantity, slippage, gas_price, swap):
         self.w3 = self.connect()
         self.address, self.private_key = self.set_address()
@@ -16,7 +17,9 @@ class Txn_bot():
         self.WBNB = Web3.toChecksumAddress("0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c")
 
     def connect(self):
-        w3 = Web3(Web3.HTTPProvider("https://bsc-dataseed.binance.org/"))
+        with open("./keys.json") as f:
+            keys = json.load(f)
+        w3 = Web3(Web3.HTTPProvider(keys["RPC"]))
         return w3
 
     def set_address(self):
