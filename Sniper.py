@@ -88,9 +88,8 @@ def checkProfit():
                     )
     txn = pbot.approve()
     print(txn[1])
-    sleep(5)
-    tq = math.floor(pbot.get_token_balance()* 100)/100.0
-    print(tq)
+    sleep(3)
+    tq = math.floor(pbot.get_token_balance()* 10000000)/10000000.0
     cbot = Txn_bot(
                     token_address=token,
                     quantity=tq,
@@ -99,13 +98,14 @@ def checkProfit():
                     swap=swap
                     )
     spinner.stop()
+    sleep(3)
     while True:
         try:
             sleep(Timer)
             currentProfit = (cbot.amountsOut_sell()[1] /(10**18))
             print("Current Min Output from your Tokens", round(currentProfit,4), end="\r")
             if currentProfit >= profit:
-                print("\nProfit reached, Sell now all Tokens.")
+                print("Profit reached, Sell now all Tokens.")
                 sbot = Txn_bot(
                     token_address=token,
                     quantity=tq,
@@ -191,3 +191,4 @@ def Snip():
             break
     
 Snip()
+print("Bot Finish!")
