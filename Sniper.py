@@ -190,6 +190,6 @@ def Snip():
                 print(e)
                 break
         except:
-            break
+            pass
     
 Snip()
