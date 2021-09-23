@@ -1,7 +1,7 @@
 
 from txns import Txn_bot
 from time import sleep
-import argparse
+import argparse, math
 from honeypotChecker import HoneyPotChecker
 from halo import Halo
 from threading import Thread
@@ -14,10 +14,8 @@ parser.add_argument('-tx', '--txamount', default=1, nargs="?", const=1, type=int
 parser.add_argument('-hp', '--honeypot', default=True, nargs="?", const=True, type=bool, help='bool, check if your token to buy is a Honeypot, e.g. "-hp True"')
 parser.add_argument('-swap', '--swap', default=[1], type=list, help='list, Witch Swap? e.g. "-swap [1] for Panackeswap"')
 parser.add_argument('-tp', '--takeprofit', default=0, nargs="?", const=True, type=int, help='int, Percentage TakeProfit from your input BNB amount, if 0 then not used. e.g. "-tp 50" ')
-parser.add_argument('-wb', '--awaitBlocks', default=0, nargs="?", const=True, type=int, help='int, Await Blocks before sending BUY Transaction, if 0 then not used. e.g. "-ab 50" ')
+parser.add_argument('-wb', '--awaitBlocks', default=0, nargs="?", const=True, type=int, help='int, Await Blocks bevore sending BUY Transaction, if 0 then not used. e.g. "-ab 50" ')
 args = parser.parse_args()
-
-
 
 
 
@@ -43,8 +41,8 @@ if TIGSBALANCE >= 100:
 else:
     Time = 5
     print("Welcome Tiger Buy 100 TIGS to get faster checktime.\nSet Checktime to " + str(Time) + " seconds")
-
 Timer = float(Time)
+
 
 def calcProfitExit():
     a = ((SNIPEquantity * TXN) * takeprofit) / 100
@@ -88,8 +86,11 @@ def checkProfit():
                     gas_price=gas_price,
                     swap=swap
                     )
-    pbot.approve()
-    tq = pbot.get_token_balance()
+    txn = pbot.approve()
+    print(txn[1])
+    sleep(5)
+    tq = math.floor(pbot.get_token_balance()* 100)/100.0
+    print(tq)
     cbot = Txn_bot(
                     token_address=token,
                     quantity=tq,
@@ -97,19 +98,24 @@ def checkProfit():
                     gas_price=gas_price,
                     swap=swap
                     )
-    tokenQuantity = tq / TXN
-    #print("Waiting for Profit...")
+    spinner.stop()
     while True:
-        sleep(Timer)
         try:
-            currentProfit = (cbot.amountsOut_sellWithoutSlipp()[1] /(10**18))
-            #print("\nCurrent Output from your Tokens", round(currentProfit,4), end="\r")
+            sleep(Timer)
+            currentProfit = (cbot.amountsOut_sell()[1] /(10**18))
+            print("Current Min Output from your Tokens", round(currentProfit,4), end="\r")
             if currentProfit >= profit:
-                #print("\nProfit reached, Sell now all Tokens.")
-                spinner.stop()
-                for i in range(TXN):
-                    sbot = Txn_bot(token_address=token, quantity=tokenQuantity, slippage=slippage, gas_price=gas_price, swap=swap)
-                    sbot.sell_token()
+                print("\nProfit reached, Sell now all Tokens.")
+                sbot = Txn_bot(
+                    token_address=token,
+                    quantity=tq,
+                    slippage=slippage,
+                    gas_price=gas_price,
+                    swap=swap)
+                tx = sbot.sell_token()
+                print(tx[1])
+                if tx[0] == False:
+                    exit()
                 break
         except Exception as e:
             print(e)
@@ -143,7 +149,6 @@ def waitBlocks():
             break
 
 
-
 def buy():
     spinner = Halo(text='BUY Tokens', spinner='dots')
     spinner.start()
@@ -153,16 +158,19 @@ def buy():
         for i in range(TXN):
             try:
                 bot = Txn_bot(token_address=token, quantity=SNIPEquantity, slippage=slippage, gas_price=gas_price, swap=swap)
-                bot.buy_token()
+                tx = bot.buy_token()
+                print(tx[1])
+                if tx[0] == False:
+                    exit()
             except Exception as e:
                 print(e)
         spinner.stop()
-        if profit != 0:
-            checkProfit()
+        if tx[0] == True:
+            if profit != 0:
+                checkProfit()
     except Exception as e:
         print(e)
     
-
 
 def Snip():
     spinner = Halo(text='Waiting for Liquidity', spinner='dots')
@@ -180,13 +188,6 @@ def Snip():
                 print(e)
                 break
         except:
-            pass
+            break
     
-
 Snip()
-
-
-
-
-
-

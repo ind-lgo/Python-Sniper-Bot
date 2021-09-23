@@ -66,6 +66,7 @@ class Txn_bot():
             ).call()
         return Amount
 
+
     def amountsOut_sell(self):
         Amount = self.utils.functions.getAmountsOut(
             int((self.quantity * (10** self.get_token_decimals())) * self.slippage),
@@ -74,13 +75,6 @@ class Txn_bot():
             ).call()
         return Amount
 
-    def amountsOut_sellWithoutSlipp(self):
-        Amount = self.utils.functions.getAmountsOut(
-            int(self.quantity * (10** self.get_token_decimals())),
-            [self.token_address, self.WBNB],
-            self.SWAP
-            ).call()
-        return Amount
 
     def get_amounts_out_buy(self):
         Amount = self.utils.functions.getAmountsOut(
@@ -109,7 +103,7 @@ class Txn_bot():
             self.address, 
         ).buildTransaction(
             {'from': self.address, 
-            'gas': 780000,
+            'gas': 480000,
             'gasPrice': self.gas_price,
             'nonce': self.w3.eth.getTransactionCount(self.address), 
             'value': int(self.quantity)}
@@ -121,42 +115,53 @@ class Txn_bot():
         txn = self.w3.eth.sendRawTransaction(signed_txn.rawTransaction)
         print("\nTX Hash:",txn.hex())
         txn_receipt = self.w3.eth.waitForTransactionReceipt(txn)
-        if txn_receipt["status"] == 1: print("\nTransaction Successfull!")
-        else: print("\nTransaction Faild!")
+        if txn_receipt["status"] == 1: return True,"\nBUY Transaction Successfull!"
+        else: return False,"\nBUY Transaction Faild!"
 
-
+    def is_approve(self):
+        Approve = self.token_contract.functions.allowance( self.address ,self.router_address).call()
+        Aproved_quantity = self.quantity * (10 ** self.token_contract.functions.decimals().call())
+        if Approve <= Aproved_quantity:
+            return False
+        else:
+            return True
 
     def approve(self):
-        txn = self.token_contract.functions.approve(
-            self.router_address,
-            115792089237316195423570985008687907853269984665640564039457584007913129639935 # Max Approve
-        ).buildTransaction(
-            {'from': self.address, 
-            'gas': 100000,
-            'gasPrice': self.gas_price,
-            'nonce': self.w3.eth.getTransactionCount(self.address), 
-            'value': 0}
+        if self.is_approve == False:
+            txn = self.token_contract.functions.approve(
+                self.router_address,
+                115792089237316195423570985008687907853269984665640564039457584007913129639935 # Max Approve
+            ).buildTransaction(
+                {'from': self.address, 
+                'gas': 100000,
+                'gasPrice': self.gas_price,
+                'nonce': self.w3.eth.getTransactionCount(self.address), 
+                'value': 0}
+                )
+            signed_txn = self.w3.eth.account.sign_transaction(
+                txn,
+                self.private_key
             )
-        signed_txn = self.w3.eth.account.sign_transaction(
-            txn,
-            self.private_key
-        )
-        txn = self.w3.eth.sendRawTransaction(signed_txn.rawTransaction)
-        print("\nApprove :",txn.hex())
-        txn_receipt = self.w3.eth.waitForTransactionReceipt(txn)   
+            txn = self.w3.eth.sendRawTransaction(signed_txn.rawTransaction)
+            print("\nApproved :",txn.hex())
+            txn_receipt = self.w3.eth.waitForTransactionReceipt(txn)   
+            if txn_receipt["status"] == 1: return True,"\nApprove Successfull!"
+            else: return False,"\nApprove Transaction Faild!"
+        else:
+            return True, "\nAllready approved!"
 
 
     def sell_token(self):
-        self.quantity = int(self.quantity * (10 ** self.token_contract.functions.decimals().call()))
+        #self.quantity = int(self.quantity * (10 ** self.token_contract.functions.decimals().call()))
         txn = self.router.functions.makeTokenBNBSwap(
-            int(self.quantity),
-            int(self.get_amounts_out_sell()[1]),
+            int(self.quantity * (10**self.get_token_decimals())),
+            int(self.amountsOut_sell()[1]),
             [self.token_address, self.WBNB],
             self.SWAP,
             self.address, 
         ).buildTransaction(
             {'from': self.address, 
-            'gas': 750000,
+            'gas': 550000,
             'gasPrice': self.gas_price,
             'nonce': self.w3.eth.getTransactionCount(self.address), 
             'value': 0}
@@ -168,6 +173,6 @@ class Txn_bot():
         txn = self.w3.eth.sendRawTransaction(signed_txn.rawTransaction)
         print("\nSELL TOKENS :",txn.hex())
         txn_receipt = self.w3.eth.waitForTransactionReceipt(txn)
-        if txn_receipt["status"] == 1: print("\nTransaction Successfull!")
-        else: print("\nTransaction Faild!")
+        if txn_receipt["status"] == 1: return True,"\nSELL Transaction Successfull!"
+        else: return False,"\nSELL Transaction Faild!"
         #print(txn_receipt)
