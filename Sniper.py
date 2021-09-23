@@ -6,6 +6,8 @@ from honeypotChecker import HoneyPotChecker
 from halo import Halo
 from threading import Thread
 
+spinneroptions = {'interval': 250,'frames': ['🚀 ', '🌙 ', '🚀 ', '🌕 ', '💸 ']}
+
 parser = argparse.ArgumentParser(description='Set your Token and Amount example: "sniper.py -t 0x34faa80fec0233e045ed4737cc152a71e490e2e3 -a 0.2 -s 15"')
 parser.add_argument('-t', '--token', help='str, Token for snipe e.g. "-t 0x34faa80fec0233e045ed4737cc152a71e490e2e3"')
 parser.add_argument('-a', '--amount', help='float, Amount in Bnb to snipe e.g. "-a 0.1"')
@@ -77,7 +79,7 @@ def checkIsHoneypot():
 
 
 def checkProfit():
-    spinner = Halo(text='Checking Profit', spinner='dots')
+    spinner = Halo(text='Checking Profit', spinner=spinneroptions)
     spinner.start()
     pbot = Txn_bot(
                     token_address=token,
@@ -123,7 +125,7 @@ def checkProfit():
 
           
 def waitBlocks():
-    spinner = Halo(text='Waiting Blocks', spinner='dots')
+    spinner = Halo(text='Waiting Blocks', spinner=spinneroptions)
     spinner.start()
     blocksbot = Txn_bot(token_address=token, quantity=0, slippage=0, gas_price=gas_price, swap=swap)
     waitForHigh = int(blocksbot.getBlockHigh()) + waitingBlocks
@@ -150,7 +152,7 @@ def waitBlocks():
 
 
 def buy():
-    spinner = Halo(text='BUY Tokens', spinner='dots')
+    spinner = Halo(text='BUY Tokens', spinner=spinneroptions)
     spinner.start()
     sleep(0.1)
     try:
@@ -173,7 +175,7 @@ def buy():
     
 
 def Snip():
-    spinner = Halo(text='Waiting for Liquidity', spinner='dots')
+    spinner = Halo(text='Waiting for Liquidity', spinner=spinneroptions)
     spinner.start()
     sbot = Txn_bot(token_address=token, quantity=SNIPEquantity, slippage=slippage, gas_price=gas_price, swap=swap)
     while True:
@@ -191,4 +193,3 @@ def Snip():
             break
     
 Snip()
-print("Bot Finish!")
