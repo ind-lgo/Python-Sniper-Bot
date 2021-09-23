@@ -130,7 +130,7 @@ class Txn_bot():
             return True
 
     def approve(self):
-        if self.is_approve == False:
+        if self.is_approve() == False:
             txn = self.token_contract.functions.approve(
                 self.router_address,
                 115792089237316195423570985008687907853269984665640564039457584007913129639935 # Max Approve
