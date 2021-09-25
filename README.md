@@ -23,10 +23,10 @@ Here are all options:
 '-a', '--amount', float, Amount in Bnb to snipe e.g. "-a 0.1"
 '-s', '--slippage', default=10, slippage in % "-s 10"
 '-tx', '--txamount', default=1, how mutch tx you want to send? It Split your BNB Amount in e.g. "-tx 5"
-'-swap', '--swap', default=[1], Witch Swap? e.g. "-swap [1]" for Panackeswap
-'-hp', '--honeypot', default=True, check if your token to buy is a Honeypot
+'-swap', '--swap', default=[1], Witch Swap? e.g. "-swap [1]" for Panackeswap'
+'-hp', '--honeypot', default=True, check if your token to buy is a Honeypot'
 '-tp', '--takeprofit', default=0,  Percentage TakeProfit from your input BNB amount, if 0 then not used. e.g. "-tp 50" '
-'-wb', '--awaitBlocks', default=0, Await Blocks before sending BUY Transaction, if 0 then not used. e.g. "-ab 50" ')
+'-wb', '--awaitBlocks', default=0, Await Blocks before sending BUY Transaction, if 0 then not used. e.g. "-ab 50" '
 ```
 
 
