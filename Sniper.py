@@ -5,8 +5,12 @@ import argparse, math
 from honeypotChecker import HoneyPotChecker
 from halo import Halo
 from threading import Thread
+from style import style
 
-spinneroptions = {'interval': 250,'frames': ['🚀 ', '🌙 ', '🚀 ', '🌕 ', '💸 ']}
+
+spinneroptions = {'interval': 250,
+                    'frames': ['🚀 ', '🌙 ', '🚀 ', '🌕 ', '💸 '],
+                    }
 
 parser = argparse.ArgumentParser(description='Set your Token and Amount example: "sniper.py -t 0x34faa80fec0233e045ed4737cc152a71e490e2e3 -a 0.2 -s 15"')
 parser.add_argument('-t', '--token', help='str, Token for snipe e.g. "-t 0x34faa80fec0233e045ed4737cc152a71e490e2e3"')
@@ -32,17 +36,22 @@ takeprofit = int(args.takeprofit)
 waitingBlocks = int(args.awaitBlocks)
 gas_price = 6 * (10**9)
 
-TIGS = Txn_bot(token_address="0x34faa80fec0233e045ed4737cc152a71e490e2e3", quantity=0, slippage=slippage, gas_price=gas_price, swap=swap)
+TIGS = Txn_bot(
+    token_address="0x34faa80fec0233e045ed4737cc152a71e490e2e3",
+    quantity=0,
+    slippage=slippage,
+    gas_price=gas_price,
+    swap=swap)
 TIGSBALANCE = TIGS.get_token_balance()
 
  
 print("")
 if TIGSBALANCE >= 100:
     Time = 0.1
-    print("Welcome Premium Tiger!\nSet Checktime to " + str(Time) + " seconds")
+    print(style().GREEN +"Welcome Premium Tiger!\nSet Checktime to " + str(Time) + " seconds"+ style().RESET)
 else:
     Time = 5
-    print("Welcome Tiger Buy 100 TIGS to get faster checktime.\nSet Checktime to " + str(Time) + " seconds")
+    print(style().RED +"Welcome Tiger Buy 100 TIGS to get faster checktime.\nSet Checktime to " + str(Time) + " seconds"+ style().RESET)
 Timer = float(Time)
 
 
@@ -60,17 +69,17 @@ del TIGS, TIGSBALANCE
 
 
 print("")
-print("Start Sniper with following arguments")
-print("---------------------------------------------------")
-print("Amount for Buy:", str(args.amount) , "BNB")
-print("Token to Snipe :", args.token)
-print("Slippage :", str(args.slippage) + "%")
-print("Transaction to send:", str(args.txamount))
-print("Amount per transaction :", str(SNIPEquantity))
-print("Await Blocks before buy :", str(waitingBlocks))
-print("Take Profit Percent :", str(takeprofit))
-print("Min Output from Take Profit:",str(profit))
-print("---------------------------------------------------")
+print(style().GREEN +"Start Sniper with following arguments"+ style().RESET)
+print(style().BLUE + "---------------------------------------------------"+ style().RESET)
+print(style().YELLOW + "Amount for Buy:",style().GREEN + str(args.amount) + " BNB"+ style().RESET)
+print(style().YELLOW + "Token to Snipe :",style().GREEN + str(args.token) + style().RESET)
+print(style().YELLOW + "Slippage :",style().GREEN + str(args.slippage) + "%"+ style().RESET)
+print(style().YELLOW + "Transaction to send:",style().GREEN + str(args.txamount)+ style().RESET)
+print(style().YELLOW + "Amount per transaction :",style().GREEN + str(SNIPEquantity)+ style().RESET)
+print(style().YELLOW + "Await Blocks before buy :",style().GREEN + str(waitingBlocks)+ style().RESET)
+print(style().YELLOW + "Take Profit Percent :",style().GREEN + str(takeprofit)+ style().RESET)
+print(style().YELLOW + "Min Output from Take Profit:",style().GREEN +str(profit)+ style().RESET)
+print(style().BLUE + "---------------------------------------------------"+ style().RESET)
 
 
 def checkIsHoneypot():
@@ -92,10 +101,11 @@ def checkProfit():
     print(txn[1])
     sleep(3)
     tq = math.floor(pbot.get_token_balance()* 10000000)/10000000.0
+    selltax = HoneyPotChecker(token).getSellTAX()
     cbot = Txn_bot(
                     token_address=token,
                     quantity=tq,
-                    slippage=slippage,
+                    slippage=selltax,
                     gas_price=gas_price,
                     swap=swap
                     )
@@ -105,9 +115,9 @@ def checkProfit():
         try:
             sleep(Timer)
             currentProfit = (cbot.amountsOut_sell()[1] /(10**18))
-            print("Current Min Output from your Tokens", round(currentProfit,4), end="\r")
+            print(style().YELLOW +"Current Min Output from your Tokens",style().GREEN + str(round(currentProfit,4)), end="\r" + style().RESET)
             if currentProfit >= profit:
-                print("Profit reached, Sell now all Tokens.")
+                #print("Profit reached, Sell now all Tokens.")
                 sbot = Txn_bot(
                     token_address=token,
                     quantity=tq,
@@ -139,12 +149,12 @@ def waitBlocks():
                 else:
                     T = False
                 if T == False:
-                    print("\nOK, your Token is not a honeypot!")
+                    print(style().GREEN +"\n[OK], your Token is not a honeypot!"+ style().RESET)
                     spinner.stop()
                     buy()
                     break
                 else:
-                    print("\n",token, "is current a Honeypot Token!")
+                    print(style().RED +"\n[FAIL]",token, "is current a Honeypot Token!"+ style().RESET)
                     break
         except Exception as e:
             print(e)
@@ -154,9 +164,8 @@ def waitBlocks():
 def buy():
     spinner = Halo(text='BUY Tokens', spinner=spinneroptions)
     spinner.start()
-    sleep(0.1)
     try:
-        print("\nOK, BUY with", TXN, "Transactions, Good luck")
+        print(style().GREEN + "\n[OK] BUY with " + str(TXN)+ " Transactions, Good luck"+ style().RESET )
         for i in range(TXN):
             try:
                 bot = Txn_bot(token_address=token, quantity=SNIPEquantity, slippage=slippage, gas_price=gas_price, swap=swap)
@@ -181,7 +190,7 @@ def Snip():
     while True:
         sleep(Timer)
         try:
-            print(f"\nMin Output from {SNIPEquantity} BNB:",sbot.amountsOut_buy()[1] / (10 ** sbot.get_token_decimals()))
+            print(style().YELLOW + f"\nMin Output from {str(SNIPEquantity)} BNB:" + style.GREEN+ str(float(sbot.amountsOut_buy()[1] / (10 ** sbot.get_token_decimals()))) + style().RESET)
             try:
                 spinner.stop()
                 waitBlocks()
@@ -189,7 +198,9 @@ def Snip():
             except Exception as e:
                 print(e)
                 break
-        except:
-            pass
+        except Exception as e:
+            print(e)
+            continue
     
 Snip()
+print(style().GREEN + "[DONE] TradingTigers Sniper Bot finish!" + style().RESET)

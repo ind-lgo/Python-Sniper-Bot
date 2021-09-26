@@ -1,5 +1,6 @@
 from web3 import Web3
 import json
+from style import style
 
 class Txn_bot():
 
@@ -26,9 +27,9 @@ class Txn_bot():
         with open("./keys.json") as f:
             keys = json.load(f)
         if len(keys["metamask_address"]) <= 41:
-            print("Set your Address in the keys.json file!")
+            print(style.RED +"Set your Address in the keys.json file!" + style.RESET)
         if len(keys["metamask_private_key"]) <= 42:
-            print("Set your PrivateKey in the keys.json file!")
+            print(style.RED +"Set your PrivateKey in the keys.json file!"+ style.RESET)
         return(keys["metamask_address"], keys["metamask_private_key"])
 
     def get_token_decimals(self):
@@ -116,15 +117,15 @@ class Txn_bot():
             self.private_key
         )
         txn = self.w3.eth.sendRawTransaction(signed_txn.rawTransaction)
-        print("\nTX Hash:",txn.hex())
+        print(style.GREEN + "\nTX Hash:",txn.hex() + style.RESET)
         txn_receipt = self.w3.eth.waitForTransactionReceipt(txn)
-        if txn_receipt["status"] == 1: return True,"\nBUY Transaction Successfull!"
-        else: return False,"\nBUY Transaction Faild!"
+        if txn_receipt["status"] == 1: return True,style.GREEN +"\nBUY Transaction Successfull!" + style.RESET
+        else: return False, style.RED +"\nBUY Transaction Faild!" + style.RESET
 
     def is_approve(self):
-        Approve = self.token_contract.functions.allowance( self.address ,self.router_address).call()
+        Approve = self.token_contract.functions.allowance(self.address ,self.router_address).call()
         Aproved_quantity = self.quantity * (10 ** self.token_contract.functions.decimals().call())
-        if Approve <= Aproved_quantity:
+        if int(Approve) <= int(Aproved_quantity):
             return False
         else:
             return True
@@ -146,12 +147,12 @@ class Txn_bot():
                 self.private_key
             )
             txn = self.w3.eth.sendRawTransaction(signed_txn.rawTransaction)
-            print("\nApproved :",txn.hex())
+            print(style.GREEN + "\nApproved :",txn.hex()+style.RESET)
             txn_receipt = self.w3.eth.waitForTransactionReceipt(txn)   
-            if txn_receipt["status"] == 1: return True,"\nApprove Successfull!"
-            else: return False,"\nApprove Transaction Faild!"
+            if txn_receipt["status"] == 1: return True,style.GREEN +"\nApprove Successfull!"+ style.RESET
+            else: return False, style.RED +"\nApprove Transaction Faild!"+ style.RESET
         else:
-            return True, "\nAllready approved!"
+            return True, style.GREEN +"\nAllready approved!"+ style.RESET
 
 
     def sell_token(self):
@@ -174,8 +175,8 @@ class Txn_bot():
             self.private_key
         )
         txn = self.w3.eth.sendRawTransaction(signed_txn.rawTransaction)
-        print("\nSELL TOKENS :",txn.hex())
+        print(style.GREEN + "\nSELL TOKENS :",txn.hex() + style.RESET)
         txn_receipt = self.w3.eth.waitForTransactionReceipt(txn)
-        if txn_receipt["status"] == 1: return True,"\nSELL Transaction Successfull!"
-        else: return False,"\nSELL Transaction Faild!"
+        if txn_receipt["status"] == 1: return True,style.GREEN +"\nSELL Transaction Successfull!" + style.RESET
+        else: return False, style.RED +"\nSELL Transaction Faild!" + style.RESET
         #print(txn_receipt)

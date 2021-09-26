@@ -3,6 +3,7 @@ from honeypotChecker import HoneyPotChecker
 import argparse, math
 from halo import Halo
 from time import sleep
+from style import style
 spinneroptions = {'interval': 250,'frames': ['🚀 ', '🌙 ', '🚀 ', '🌕 ', '💸 ']}
 
 
@@ -27,16 +28,17 @@ TXN = int(args.txamount)
 takeprofit = int(args.takeprofit)
 
 
+
 TIGS = Txn_bot(token_address="0x34faa80fec0233e045ed4737cc152a71e490e2e3", quantity=0, slippage=slippage, gas_price=gas_price, swap=swap)
 TIGSBALANCE = TIGS.get_token_balance()
 
 print("")
 if TIGSBALANCE >= 100:
     Time = 0.1
-    print("Welcome Premium Tiger!\nSet Checktime to " + str(Time) + " seconds")
+    print(style().GREEN + "Welcome Premium Tiger!\nSet Checktime to " + str(Time) + " seconds" + style().RESET)
 else:
     Time = 5
-    print("Welcome Tiger Buy 100 TIGS to get faster checktime.\nSet Checktime to " + str(Time) + " seconds")
+    print(style().RED +"Welcome Tiger Buy 100 TIGS to get faster checktime.\nSet Checktime to " + str(Time) + " seconds" + style().RESET)
 Timer = float(Time)
 
 def calcProfitExit():
@@ -51,16 +53,16 @@ else:
     profit = 0
 del TIGS, TIGSBALANCE
 
-print("Start FastBuy with following arguments")
-print("---------------------------------------------------")
-print("Amount for Buy:", str(args.amount) , "BNB")
-print("Token to Snipe :", args.token)
-print("Slippage :", str(args.slippage) + "%")
-print("Transaction to send:", str(args.txamount))
-print("Amount per transaction :", str(quantity))
-print("Take Profit Percent :", str(takeprofit))
-print("Min Output from Take Profit:",str(profit))
-print("---------------------------------------------------")
+print(style().GREEN +"Start FastBuy with following arguments"+ style().RESET)
+print(style().BLUE +"---------------------------------------------------"+ style().RESET)
+print(style().YELLOW +"Amount for Buy:",  style().GREEN + str(args.amount) + " BNB"+ style().RESET)
+print(style().YELLOW +"Token to Snipe :", style().GREEN + str(args.token)+ style().RESET)
+print(style().YELLOW +"Slippage :", style().GREEN + str(args.slippage) + "%" + style().RESET)
+print(style().YELLOW +"Transaction to send:", style().GREEN + str(args.txamount)+ style().RESET)
+print(style().YELLOW +"Amount per transaction :", style().GREEN + str(quantity)+ style().RESET)
+print(style().YELLOW +"Take Profit Percent :", style().GREEN + str(takeprofit)+ style().RESET)
+print(style().YELLOW +"Min Output from Take Profit:", style().GREEN + str(profit)+ style().RESET)
+print(style().BLUE +"---------------------------------------------------"+ style().RESET)
 
 
 def checkProfit():
@@ -73,26 +75,27 @@ def checkProfit():
                     gas_price=gas_price,
                     swap=swap
                     )
+    spinner.stop()
     txn = pbot.approve()
     print(txn[1])
     sleep(3)
     tq = math.floor(pbot.get_token_balance()* 10000000)/10000000.0
+    selltax = HoneyPotChecker(token_address).getSellTAX()
     cbot = Txn_bot(
                     token_address=token_address,
                     quantity=tq,
-                    slippage=slippage,
+                    slippage=selltax,
                     gas_price=gas_price,
                     swap=swap
                     )
     sleep(3)
-    spinner.stop()
     while True:
         try:
             sleep(Timer)
             currentProfit = (cbot.amountsOut_sell()[1] /(10**18))
             print("Current Min Output from your Tokens", round(currentProfit,4), end="\r")
             if currentProfit >= profit:
-                print("Profit reached, Sell now all Tokens.")
+                #print("Profit reached, Sell now all Tokens.")
                 sbot = Txn_bot(
                     token_address=token_address,
                     quantity=tq,
@@ -126,4 +129,8 @@ if BUY == True:
         if profit != 0:
             checkProfit()
 else:
-    print("Token is Hoooneypooot!")
+    print(style().RED +"Token is Hoooneypooot!" + style().RESET)
+
+
+print(style().GREEN + "[DONE] TradingTigers FastBuy finish!" + style().RESET)
+
