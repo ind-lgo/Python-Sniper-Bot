@@ -1,7 +1,7 @@
 
 from txns import Txn_bot
 from time import sleep
-import argparse, math
+import argparse, math, sys
 from honeypotChecker import HoneyPotChecker
 from halo import Halo
 from threading import Thread
@@ -115,7 +115,7 @@ def checkProfit():
         try:
             sleep(Timer)
             currentProfit = (cbot.amountsOut_sell()[1] /(10**18))
-            print(style().YELLOW +"Current Min Output from your Tokens",style().GREEN + str(round(currentProfit,4)), end="\r" + style().RESET)
+            print(style().YELLOW +"Current Min Output from your Tokens",style().GREEN + str(round(currentProfit,7)), end="\r" + style().RESET)
             if currentProfit >= profit:
                 #print("Profit reached, Sell now all Tokens.")
                 sbot = Txn_bot(
@@ -127,7 +127,7 @@ def checkProfit():
                 tx = sbot.sell_token()
                 print(tx[1])
                 if tx[0] == False:
-                    exit()
+                    sys.exit()
                 break
         except Exception as e:
             print(e)
@@ -172,7 +172,7 @@ def buy():
                 tx = bot.buy_token()
                 print(tx[1])
                 if tx[0] == False:
-                    exit()
+                    sys.exit()
             except Exception as e:
                 print(e)
         spinner.stop()
@@ -199,8 +199,8 @@ def Snip():
                 print(e)
                 break
         except Exception as e:
-            print(e)
-            continue
-    
+            #print(e)
+            pass    
+
 Snip()
 print(style().GREEN + "[DONE] TradingTigers Sniper Bot finish!" + style().RESET)
