@@ -1,0 +1,7 @@
+{
+    "metamask_address":"",
+    "metamask_private_key":"",
+    "RPC": "https://bsc-dataseed.binance.org/",
+    "MaxSellTax": 15,
+    "MaxBuyTax": 15
+}

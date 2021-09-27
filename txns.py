@@ -18,13 +18,13 @@ class Txn_bot():
         self.WBNB = Web3.toChecksumAddress("0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c")
 
     def connect(self):
-        with open("./keys.json") as f:
+        with open("./Settings.json") as f:
             keys = json.load(f)
         w3 = Web3(Web3.HTTPProvider(keys["RPC"]))
         return w3
 
     def set_address(self):
-        with open("./keys.json") as f:
+        with open("./Settings.json") as f:
             keys = json.load(f)
         if len(keys["metamask_address"]) <= 41:
             print(style.RED +"Set your Address in the keys.json file!" + style.RESET)
@@ -36,7 +36,7 @@ class Txn_bot():
         return self.token_contract.functions.decimals().call()
 
     def set_Utils(self):
-        Utils_address = Web3.toChecksumAddress("0x09029d284Eb0f9D28ec57a333062Ed1115e45771") 
+        Utils_address = Web3.toChecksumAddress("0xA7Dd8a34B931D2A0272218Df00D08C3b76A96578") 
         with open("./abis/DEX_Utils.json") as f:
             contract_abi = json.load(f)
         utils = self.w3.eth.contract(address=Utils_address, abi=contract_abi)
@@ -46,7 +46,7 @@ class Txn_bot():
         return self.w3.eth.block_number
 
     def set_router(self):
-        router_address = Web3.toChecksumAddress("0x5F16809FF1705042da1AB84145D2C20d7D123803") 
+        router_address = Web3.toChecksumAddress("0xA4184bb99692573EF2cae4c00F22b651c75252Fb") 
         with open("./abis/TIGSRouterV1.json") as f:
             contract_abi = json.load(f)
         router = self.w3.eth.contract(address=router_address, abi=contract_abi)

@@ -1,6 +1,6 @@
 from txns import Txn_bot
 from honeypotChecker import HoneyPotChecker
-import argparse, math, sys
+import argparse, math, sys, json
 from halo import Halo
 from time import sleep
 from style import style
@@ -12,7 +12,7 @@ parser.add_argument('-t', '--token', help='str, Token for snipe e.g. "-t 0xc87b8
 parser.add_argument('-a', '--amount', help='float, Amount in Bnb to snipe e.g. "-a 0.1"')
 parser.add_argument('-s', '--slippage', help='int, slippage in % "-s 10"')
 parser.add_argument('-hp', '--honeypot', default=True, nargs="?", const=True, type=bool, help='bool, check if your token to buy is a Honeypot')
-parser.add_argument('-swap', '--swap', default=[1], type=list, help='list, Witch Swap? e.g. "-swap [1] for Panackeswap"')
+parser.add_argument('-swap', '--swap', default=[0], type=list, help='list, Witch Swap? e.g. "-swap [0] for Panackeswap"')
 parser.add_argument('-tx', '--txamount', default=1, nargs="?", const=1, type=int, help='int, how mutch tx you want to send? It Split your BNB Amount in e.g. "-tx 5"')
 parser.add_argument('-tp', '--takeprofit', default=0, nargs="?", const=True, type=int, help='int, Percentage TakeProfit from your input BNB amount, if 0 then not used. e.g. "-tp 50" ')
 args = parser.parse_args()
@@ -111,6 +111,20 @@ def checkProfit():
             print(e)
             break
 
+def CheckingTAX():
+    with open("Settings.json", "r") as S:
+        settings = json.load(S)
+    MaxSellTax = settings["MaxSellTax"]
+    MaxBuyTax = settings["MaxBuyTax"]
+    if float(MaxSellTax) >= HoneyPotChecker(token_address).getSellTAX():
+        if float(MaxBuyTax) >= HoneyPotChecker(token_address).getBUYTAX():
+            return True
+        else:
+            return False
+    else:
+        return False
+
+
 
 if checkHoney == True:
     isHoneypot = HoneyPotChecker(Token_Address=token_address).Is_Honeypot()
@@ -119,6 +133,9 @@ if checkHoney == True:
 if checkHoney == False:
     BUY = True
 
+if CheckingTAX() == False:
+    print(style().RED +"\n[FAIL] Taxes exceed, Buy/Sell Tax higher then Settings.json"+ style().RESET)
+    sys.exit()
 
 if BUY == True:
     for i in range(TXN):

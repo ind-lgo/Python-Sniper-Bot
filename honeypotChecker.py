@@ -16,3 +16,8 @@ class HoneyPotChecker():
         r = requests.get(self.url)
         jres = json.loads(r.text)
         return jres['SELLTAX']
+
+    def getBUYTAX(self):
+        r = requests.get(self.url)
+        jres = json.loads(r.text)
+        return jres['BUYTAX']

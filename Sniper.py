@@ -1,7 +1,7 @@
 
 from txns import Txn_bot
 from time import sleep
-import argparse, math, sys
+import argparse, math, sys, json
 from honeypotChecker import HoneyPotChecker
 from halo import Halo
 from threading import Thread
@@ -18,7 +18,7 @@ parser.add_argument('-a', '--amount', help='float, Amount in Bnb to snipe e.g. "
 parser.add_argument('-s', '--slippage', default=10, nargs="?", const=1, type=int, help='int, slippage in % "-s 10"')
 parser.add_argument('-tx', '--txamount', default=1, nargs="?", const=1, type=int, help='int, how mutch tx you want to send? It Split your BNB Amount in e.g. "-tx 5"')
 parser.add_argument('-hp', '--honeypot', default=True, nargs="?", const=True, type=bool, help='bool, check if your token to buy is a Honeypot, e.g. "-hp True"')
-parser.add_argument('-swap', '--swap', default=[1], type=list, help='list, Witch Swap? e.g. "-swap [1] for Panackeswap"')
+parser.add_argument('-swap', '--swap', default=[0], type=list, help='list, Witch Swap? e.g. "-swap [0] for Panackeswap"')
 parser.add_argument('-tp', '--takeprofit', default=0, nargs="?", const=True, type=int, help='int, Percentage TakeProfit from your input BNB amount, if 0 then not used. e.g. "-tp 50" ')
 parser.add_argument('-wb', '--awaitBlocks', default=0, nargs="?", const=True, type=int, help='int, Await Blocks bevore sending BUY Transaction, if 0 then not used. e.g. "-ab 50" ')
 args = parser.parse_args()
@@ -86,6 +86,19 @@ def checkIsHoneypot():
     isHoney = HoneyPotChecker(token).Is_Honeypot()
     return isHoney
 
+def CheckingTAX():
+    with open("Settings.json", "r") as S:
+        settings = json.load(S)
+    MaxSellTax = settings["MaxSellTax"]
+    MaxBuyTax = settings["MaxBuyTax"]
+    if float(MaxSellTax) >= HoneyPotChecker(token).getSellTAX():
+        if float(MaxBuyTax) >= HoneyPotChecker(token).getBUYTAX():
+            return True
+        else:
+            return False
+    else:
+        return False
+
 
 def checkProfit():
     spinner = Halo(text='Checking Profit', spinner=spinneroptions)
@@ -144,17 +157,21 @@ def waitBlocks():
             sleep(0.8)
             currentBlock = blocksbot.getBlockHigh()
             if waitForHigh <= currentBlock:
-                if checkHoney == True:
-                    T = checkIsHoneypot()
+                if CheckingTAX() == True:
+                    if checkHoney == True:
+                        T = checkIsHoneypot()
+                    else:
+                        T = False
+                    if T == False:
+                        print(style().GREEN +"\n[OK], your Token is not a honeypot!"+ style().RESET)
+                        spinner.stop()
+                        buy()
+                        break
+                    else:
+                        print(style().RED +"\n[FAIL]",token, "is current a Honeypot Token!"+ style().RESET)
+                        break
                 else:
-                    T = False
-                if T == False:
-                    print(style().GREEN +"\n[OK], your Token is not a honeypot!"+ style().RESET)
-                    spinner.stop()
-                    buy()
-                    break
-                else:
-                    print(style().RED +"\n[FAIL]",token, "is current a Honeypot Token!"+ style().RESET)
+                    print(style().RED +"\n[FAIL] Taxes exceed, Buy/Sell Tax higher then Settings.json"+ style().RESET)
                     break
         except Exception as e:
             print(e)
@@ -204,3 +221,8 @@ def Snip():
 
 Snip()
 print(style().GREEN + "[DONE] TradingTigers Sniper Bot finish!" + style().RESET)
+
+
+
+
+
