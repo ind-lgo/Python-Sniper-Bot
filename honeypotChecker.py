@@ -12,3 +12,7 @@ class HoneyPotChecker():
         elif jres['HONEYPOT'] == True:
             return True
 
+    def getSellTAX(self):
+        r = requests.get(self.url)
+        jres = json.loads(r.text)
+        return jres['SELLTAX']
