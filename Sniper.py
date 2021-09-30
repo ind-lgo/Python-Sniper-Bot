@@ -8,6 +8,7 @@ from threading import Thread
 from style import style
 
 
+
 spinneroptions = {'interval': 250,
                     'frames': ['🚀 ', '🌙 ', '🚀 ', '🌕 ', '💸 '],
                     }
@@ -91,8 +92,9 @@ def CheckingTAX():
         settings = json.load(S)
     MaxSellTax = settings["MaxSellTax"]
     MaxBuyTax = settings["MaxBuyTax"]
-    if float(MaxSellTax) >= HoneyPotChecker(token).getSellTAX():
-        if float(MaxBuyTax) >= HoneyPotChecker(token).getBUYTAX():
+    SellTax, BuyTax = HoneyPotChecker(token).getTAX()
+    if float(MaxSellTax) >= float(SellTax):
+        if float(MaxBuyTax) >= float(BuyTax):
             return True
         else:
             return False
@@ -221,8 +223,3 @@ def Snip():
 
 Snip()
 print(style().GREEN + "[DONE] TradingTigers Sniper Bot finish!" + style().RESET)
-
-
-
-
-
