@@ -15,4 +15,7 @@ class HoneyPotChecker():
     def getTAX(self):
         r = requests.get(self.url)
         jres = json.loads(r.text)
-        return jres['SELLTAX'], jres['BUYTAX']
+        try:
+            return jres['SELLTAX'], jres['BUYTAX']
+        except:
+            return 0, 0
