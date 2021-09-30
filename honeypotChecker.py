@@ -12,12 +12,7 @@ class HoneyPotChecker():
         elif jres['HONEYPOT'] == True:
             return True
 
-    def getSellTAX(self):
+    def getTAX(self):
         r = requests.get(self.url)
         jres = json.loads(r.text)
-        return jres['SELLTAX']
-
-    def getBUYTAX(self):
-        r = requests.get(self.url)
-        jres = json.loads(r.text)
-        return jres['BUYTAX']
+        return jres['SELLTAX'], jres['BUYTAX']
