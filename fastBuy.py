@@ -111,13 +111,15 @@ def checkProfit():
             print(e)
             break
 
+
 def CheckingTAX():
     with open("Settings.json", "r") as S:
         settings = json.load(S)
     MaxSellTax = settings["MaxSellTax"]
     MaxBuyTax = settings["MaxBuyTax"]
-    if float(MaxSellTax) >= HoneyPotChecker(token_address).getSellTAX():
-        if float(MaxBuyTax) >= HoneyPotChecker(token_address).getBUYTAX():
+    SellTax, BuyTax = HoneyPotChecker(token_address).getTAX()
+    if float(MaxSellTax) >= float(SellTax):
+        if float(MaxBuyTax) >= float(BuyTax):
             return True
         else:
             return False
@@ -150,4 +152,3 @@ else:
 
 
 print(style().GREEN + "[DONE] TradingTigers FastBuy finish!" + style().RESET)
-
