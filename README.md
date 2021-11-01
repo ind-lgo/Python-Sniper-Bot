@@ -4,7 +4,7 @@ Web3 Pancakeswap Sniper&& Take Profit bot written in python3, Please note the li
 ### The first Binance Smart Chain sniper bot with Honeypot checker!  
 ![Sniper](https://trading-tigers.com/assets/img/preview1.png)  
 # Infos
-If you have 100 Tigs on your BSC address, the bot will check for liquidity every 0.1 seconds,  if you have less than 100 TIGS then only every 5 seconds!  
+You pay 1% fees on each transaction.
 
 ## [TradingTigers Token @BSC](https://bscscan.com/token/0x34faa80fec0233e045ed4737cc152a71e490e2e3)  
 ![Sniper](https://trading-tigers.com/assets/img/Gui-Preview01.png)  
@@ -21,12 +21,11 @@ Here are all options:
 ```python3
 '-t', '--token', Token for snipe e.g. "-t 0xc87b88aafb95f0b88c3a74fc96344e4bccab6bde"
 '-a', '--amount', float, Amount in Bnb to snipe e.g. "-a 0.1"
-'-s', '--slippage', default=10, slippage in % "-s 10"
 '-tx', '--txamount', default=1, how mutch tx you want to send? It Split your BNB Amount in e.g. "-tx 5"
-'-swap', '--swap', default=[1], Witch Swap? e.g. "-swap [1]" for Panackeswap'
 '-hp', '--honeypot', default=True, check if your token to buy is a Honeypot'
 '-tp', '--takeprofit', default=0,  Percentage TakeProfit from your input BNB amount, if 0 then not used. e.g. "-tp 50" '
 '-wb', '--awaitBlocks', default=0, Await Blocks before sending BUY Transaction, if 0 then not used. e.g. "-ab 50" '
+'-g', '--gas', default=6, 'int, set Gas in GWEI default 6" '
 ```
 
 
@@ -51,7 +50,7 @@ python -m pip install -r requirements.txt
 
 Start Sniper:  
 ```python
-python Sniper.py -t <TOKEN_ADDRESS> -a <AMOUNT> -s <SLIPPAGE> -tx <TXAMOUNT> -hp <CHECKHONEYPOT True/False> -wb <BLOCKS WAIT BEFORE BUY> -tp <TAKE PROFIT IN PERCENT>
-python Sniper.py -t 0x34faa80fec0233e045ed4737cc152a71e490e2e3 -a 0.1 -s 20 -tx 3 -hp True -wb 10 -tp 50
+python Sniper.py -t <TOKEN_ADDRESS> -a <AMOUNT> -tx <TXAMOUNT> -hp <CHECKHONEYPOT True/False> -wb <BLOCKS WAIT BEFORE BUY> -tp <TAKE PROFIT IN PERCENT>
+python Sniper.py -t 0x34faa80fec0233e045ed4737cc152a71e490e2e3 -a 0.1 -tx 3 -hp True -wb 10 -tp 50
 ```  
 
