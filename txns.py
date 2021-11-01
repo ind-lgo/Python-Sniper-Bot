@@ -4,17 +4,14 @@ from style import style
 
 class Txn_bot():
 
-    def __init__(self, token_address, quantity, slippage, gas_price, swap):
+    def __init__(self, token_address, quantity,  gas_price):
         self.w3 = self.connect()
         self.address, self.private_key = self.set_address()
         self.token_address = Web3.toChecksumAddress(token_address)
         self.token_contract = self.set_token_contract()
-        self.utils_address, self.utils = self.set_Utils()
         self.router_address, self.router = self.set_router()
         self.quantity = quantity 
-        self.slippage = 1 - (slippage/100)
         self.gas_price = gas_price
-        self.SWAP = swap
         self.WBNB = Web3.toChecksumAddress("0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c")
 
     def connect(self):
@@ -35,19 +32,12 @@ class Txn_bot():
     def get_token_decimals(self):
         return self.token_contract.functions.decimals().call()
 
-    def set_Utils(self):
-        Utils_address = Web3.toChecksumAddress("0xA7Dd8a34B931D2A0272218Df00D08C3b76A96578") 
-        with open("./abis/DEX_Utils.json") as f:
-            contract_abi = json.load(f)
-        utils = self.w3.eth.contract(address=Utils_address, abi=contract_abi)
-        return (Utils_address, utils)
-
     def getBlockHigh(self):
         return self.w3.eth.block_number
 
     def set_router(self):
-        router_address = Web3.toChecksumAddress("0xA4184bb99692573EF2cae4c00F22b651c75252Fb") 
-        with open("./abis/TIGSRouterV1.json") as f:
+        router_address = Web3.toChecksumAddress("0xde937d83e62764c1f4809b87d4c8c5779c351fbf") 
+        with open("./abis/BSC_Swapper.json") as f:
             contract_abi = json.load(f)
         router = self.w3.eth.contract(address=router_address, abi=contract_abi)
         return (router_address, router)
@@ -62,49 +52,35 @@ class Txn_bot():
         return self.token_contract.functions.balanceOf(self.address).call() / (10 ** self.token_contract.functions.decimals().call())
 
 
-    def amountsOut_buy(self):
-        Amount = self.utils.functions.getAmountsOut(
-            int((self.quantity * (10** 18)) * self.slippage),
-            [self.WBNB, self.token_address],
-            self.SWAP
+    def getOutputAmount(self,amount,path0,path1):
+        Amount = self.router.functions.getOutoutAmounts(
+            int(amount),
+            Web3.toChecksumAddress(path0),
+            Web3.toChecksumAddress(path1),
             ).call()
         return Amount
 
 
-    def amountsOut_sell(self):
-        Amount = self.utils.functions.getAmountsOut(
-            int((self.quantity * (10** self.get_token_decimals())) * self.slippage),
-            [self.token_address, self.WBNB],
-            self.SWAP
+    def getOutputfromBNBtoToken(self):
+        Amount = self.router.functions.getOutputfromBNBtoToken(
+            int(self.quantity * (10**18)),
+            self.token_address,
             ).call()
         return Amount
 
 
-    def get_amounts_out_buy(self):
-        Amount = self.utils.functions.getAmountsOut(
-            int(self.quantity * self.slippage),
-            [self.WBNB, self.token_address],
-            self.SWAP
-            ).call()
-        return Amount
-
-
-    def get_amounts_out_sell(self):
-        Amount = self.utils.functions.getAmountsOut(
-            int(self.quantity * self.slippage),
-            [self.token_address, self.WBNB],
-            self.SWAP
+    def getOutputfromTokentoBNB(self):
+        Amount = self.router.functions.getOutputfromTokentoBNB(
+            int(self.token_contract.functions.balanceOf(self.address).call()),
+            self.token_address,
             ).call()
         return Amount
 
 
     def buy_token(self):
-        self.quantity = self.quantity * (10 ** 18)
-        txn = self.router.functions.makeBNBTokenSwap(
-            int(self.get_amounts_out_buy()[1]),
-            [self.WBNB, self.token_address],
-            self.SWAP,
-            self.address, 
+        self.quantity = self.quantity * (10**18)
+        txn = self.router.functions.fromBNBtoToken(
+            self.token_address
         ).buildTransaction(
             {'from': self.address, 
             'gas': 480000,
@@ -155,14 +131,10 @@ class Txn_bot():
             return True, style.GREEN +"\nAllready approved!"+ style.RESET
 
 
-    def sell_token(self):
-        #self.quantity = int(self.quantity * (10 ** self.token_contract.functions.decimals().call()))
-        txn = self.router.functions.makeTokenBNBSwap(
-            int(self.quantity * (10**self.get_token_decimals())),
-            int(self.amountsOut_sell()[1]),
-            [self.token_address, self.WBNB],
-            self.SWAP,
-            self.address, 
+    def sell_tokens(self):
+        txn = self.router.functions.fromTokentoBNB(
+            int(self.token_contract.functions.balanceOf(self.address).call()),
+            self.token_address
         ).buildTransaction(
             {'from': self.address, 
             'gas': 550000,
