@@ -100,7 +100,7 @@ class Txn_bot():
 
     def is_approve(self):
         Approve = self.token_contract.functions.allowance(self.address ,self.router_address).call()
-        Aproved_quantity = self.quantity * (10 ** self.token_contract.functions.decimals().call())
+        Aproved_quantity = self.token_contract.functions.balanceOf(self.address).call()
         if int(Approve) <= int(Aproved_quantity):
             return False
         else:
@@ -130,8 +130,8 @@ class Txn_bot():
         else:
             return True, style.GREEN +"\nAllready approved!"+ style.RESET
 
-
     def sell_tokens(self):
+        self.approve()
         txn = self.router.functions.fromTokentoBNB(
             int(self.token_contract.functions.balanceOf(self.address).call()),
             self.token_address
