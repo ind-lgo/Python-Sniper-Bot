@@ -52,13 +52,14 @@ class Txn_bot():
         return self.token_contract.functions.balanceOf(self.address).call() / (10 ** self.token_contract.functions.decimals().call())
 
 
-    def getOutputAmount(self,amount,path0,path1):
-        Amount = self.router.functions.getOutoutAmounts(
-            int(amount),
-            Web3.toChecksumAddress(path0),
-            Web3.toChecksumAddress(path1),
-            ).call()
-        return Amount
+    def estimateGas(self, txn):
+        gas = self.w3.eth.estimateGas({
+                    "from": txn['from'],
+                    "to": txn['to'],
+                    "value": txn['value'],
+                    "data": txn['data']})
+        gas = gas + (gas / 10) # Adding 1/10 from gas to gas!
+        return gas
 
 
     def getOutputfromBNBtoToken(self):
@@ -88,6 +89,7 @@ class Txn_bot():
             'nonce': self.w3.eth.getTransactionCount(self.address), 
             'value': int(self.quantity)}
             )
+        txn.update({ 'gas' : int(self.estimateGas(txn))})
         signed_txn = self.w3.eth.account.sign_transaction(
             txn,
             self.private_key
@@ -118,6 +120,7 @@ class Txn_bot():
                 'nonce': self.w3.eth.getTransactionCount(self.address), 
                 'value': 0}
                 )
+            txn.update({ 'gas' : int(self.estimateGas(txn))})
             signed_txn = self.w3.eth.account.sign_transaction(
                 txn,
                 self.private_key
@@ -142,6 +145,7 @@ class Txn_bot():
             'nonce': self.w3.eth.getTransactionCount(self.address), 
             'value': 0}
             )
+        txn.update({ 'gas' : int(self.estimateGas(txn))})
         signed_txn = self.w3.eth.account.sign_transaction(
             txn,
             self.private_key
@@ -151,4 +155,3 @@ class Txn_bot():
         txn_receipt = self.w3.eth.waitForTransactionReceipt(txn)
         if txn_receipt["status"] == 1: return True,style.GREEN +"\nSELL Transaction Successfull!" + style.RESET
         else: return False, style.RED +"\nSELL Transaction Faild!" + style.RESET
-        #print(txn_receipt)
