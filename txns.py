@@ -4,14 +4,15 @@ from style import style
 
 class Txn_bot():
 
-    def __init__(self, token_address, quantity,  gas_price):
+    def __init__(self, token_address, quantity):
         self.w3 = self.connect()
         self.address, self.private_key = self.set_address()
         self.token_address = Web3.toChecksumAddress(token_address)
         self.token_contract = self.set_token_contract()
         self.router_address, self.router = self.set_router()
+        self.slippageBUY, self.slippageSELL = self.setSlippage()
         self.quantity = quantity 
-        self.gas_price = gas_price
+        self.gas_price = self.setGas()
         self.WBNB = Web3.toChecksumAddress("0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c")
 
     def connect(self):
@@ -19,6 +20,12 @@ class Txn_bot():
             keys = json.load(f)
         w3 = Web3(Web3.HTTPProvider(keys["RPC"]))
         return w3
+
+    def setGas(self):
+        with open("./Settings.json") as f:
+            keys = json.load(f)
+        return int(keys['GAS'] * (10**9))
+        
 
     def set_address(self):
         with open("./Settings.json") as f:
@@ -29,18 +36,25 @@ class Txn_bot():
             print(style.RED +"Set your PrivateKey in the keys.json file!"+ style.RESET)
         return(keys["metamask_address"], keys["metamask_private_key"])
 
+    def setSlippage(self):
+        with open("./Settings.json") as f:
+            keys = json.load(f)
+        return keys['MaxBuyTax'], keys['MaxSellTax']
+
     def get_token_decimals(self):
         return self.token_contract.functions.decimals().call()
 
     def getBlockHigh(self):
         return self.w3.eth.block_number
 
+
     def set_router(self):
-        router_address = Web3.toChecksumAddress("0xde937d83e62764c1f4809b87d4c8c5779c351fbf") 
+        router_address = Web3.toChecksumAddress("0xdeC8108c4415d5c18D9Ff024c84d6b35BdAd38FA") 
         with open("./abis/BSC_Swapper.json") as f:
             contract_abi = json.load(f)
         router = self.w3.eth.contract(address=router_address, abi=contract_abi)
         return (router_address, router)
+
 
     def set_token_contract(self):
         with open("./abis/bep20_abi_token.json") as f:
@@ -48,9 +62,9 @@ class Txn_bot():
         token_contract = self.w3.eth.contract(address=self.token_address, abi=contract_abi)
         return token_contract
 
+
     def get_token_balance(self): 
         return self.token_contract.functions.balanceOf(self.address).call() / (10 ** self.token_contract.functions.decimals().call())
-
 
     def estimateGas(self, txn):
         gas = self.w3.eth.estimateGas({
@@ -60,6 +74,9 @@ class Txn_bot():
                     "data": txn['data']})
         gas = gas + (gas / 10) # Adding 1/10 from gas to gas!
         return gas
+
+    def HoneypotCall(self):
+        return self.router.functions.checkHoneypot(self.token_address).call()
 
 
     def getOutputfromBNBtoToken(self):
@@ -81,7 +98,8 @@ class Txn_bot():
     def buy_token(self):
         self.quantity = self.quantity * (10**18)
         txn = self.router.functions.fromBNBtoToken(
-            self.token_address
+            self.token_address,
+            self.slippageBUY
         ).buildTransaction(
             {'from': self.address, 
             'gas': 480000,
@@ -137,7 +155,8 @@ class Txn_bot():
         self.approve()
         txn = self.router.functions.fromTokentoBNB(
             int(self.token_contract.functions.balanceOf(self.address).call()),
-            self.token_address
+            self.token_address,
+            self.slippageSELL
         ).buildTransaction(
             {'from': self.address, 
             'gas': 550000,

@@ -4,9 +4,7 @@ from time import sleep
 import argparse, math, sys, json
 from honeypotChecker import HoneyPotChecker
 from halo import Halo
-from threading import Thread
 from style import style
-
 
 
 spinneroptions = {'interval': 250,
@@ -20,9 +18,7 @@ parser.add_argument('-tx', '--txamount', default=1, nargs="?", const=1, type=int
 parser.add_argument('-hp', '--honeypot', help='bool, check if your token to buy is a Honeypot, e.g. "-hp True"')
 parser.add_argument('-tp', '--takeprofit', default=0, nargs="?", const=True, type=int, help='int, Percentage TakeProfit from your input BNB amount, if 0 then not used. e.g. "-tp 50" ')
 parser.add_argument('-wb', '--awaitBlocks', default=0, nargs="?", const=True, type=int, help='int, Await Blocks bevore sending BUY Transaction, if 0 then not used. e.g. "-ab 50" ')
-parser.add_argument('-g', '--gas', default=6, nargs="?", const=True, type=int, help='int, set Gas in GWEI default 6" ')
 args = parser.parse_args()
-
 
 TXN = int(args.txamount)
 SNIPEquantity = (float(args.amount) / TXN)
@@ -31,7 +27,6 @@ token = args.token
 checkHoney = str(args.honeypot)
 takeprofit = int(args.takeprofit)
 waitingBlocks = int(args.awaitBlocks)
-gas_price = int(args.gas) * (10**9)
 Timer = float(0.1)
 
 def calcProfitExit():
@@ -39,7 +34,6 @@ def calcProfitExit():
     b = a + (SNIPEquantity * TXN)
     return b 
     
-
 profit = "not activated"
 if takeprofit != 0: 
     profit = calcProfitExit() 
@@ -84,15 +78,13 @@ def checkProfit():
     spinner.start()
     pbot = Txn_bot(
                     token_address=token,
-                    quantity=SNIPEquantity,
-                    gas_price=gas_price)
+                    quantity=SNIPEquantity)
     txn = pbot.approve()
     print(txn[1])
     sleep(3)
     cbot = Txn_bot(
                     token_address=token,
-                    quantity=0,
-                    gas_price=gas_price)
+                    quantity=0)
     spinner.stop()
     sleep(3)
     while True:
@@ -103,8 +95,7 @@ def checkProfit():
             if currentProfit >= profit:
                 sbot = Txn_bot(
                     token_address=token,
-                    quantity=0,
-                    gas_price=gas_price)
+                    quantity=0)
                 tx = sbot.sell_tokens()
                 print(tx[1])
                 if tx[0] == False:
@@ -117,11 +108,11 @@ def checkProfit():
 def waitBlocks():
     spinner = Halo(text='Waiting Blocks', spinner=spinneroptions)
     spinner.start()
-    blocksbot = Txn_bot(token_address=token, quantity=0, gas_price=gas_price)
+    blocksbot = Txn_bot(token_address=token, quantity=0)
     waitForHigh = int(blocksbot.getBlockHigh()) + waitingBlocks
     while True:
         try:
-            sleep(0.8)
+            sleep(0.5)
             currentBlock = blocksbot.getBlockHigh()
             if waitForHigh <= currentBlock:
                 if CheckingTAX() == True:
@@ -151,7 +142,7 @@ def buy():
         print(style().GREEN + "\n[OK] BUY with " + str(TXN)+ " Transactions, Good luck"+ style().RESET )
         for i in range(TXN):
             try:
-                bot = Txn_bot(token_address=token, quantity=SNIPEquantity, gas_price=gas_price)
+                bot = Txn_bot(token_address=token, quantity=SNIPEquantity)
                 tx = bot.buy_token()
                 print(tx[1])
                 if tx[0] == False:
@@ -168,7 +159,7 @@ def buy():
 def Snip():
     spinner = Halo(text='Waiting for Liquidity', spinner=spinneroptions)
     spinner.start()
-    sbot = Txn_bot(token_address=token, quantity=SNIPEquantity, gas_price=gas_price)
+    sbot = Txn_bot(token_address=token, quantity=SNIPEquantity)
     while True:
         sleep(Timer)
         try:
