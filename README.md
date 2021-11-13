@@ -4,7 +4,7 @@ Web3 Pancakeswap Sniper&& Take Profit bot written in python3, Please note the li
 ### The first Binance Smart Chain sniper bot with Honeypot checker!  
 ![Sniper](https://trading-tigers.com/assets/img/preview1.png)  
 # Infos
-You pay 1% fees on each transaction.
+You pay 0.7% fees on each transaction.
 
 ## [TradingTigers Token @BSC](https://bscscan.com/token/0x34faa80fec0233e045ed4737cc152a71e490e2e3)  
 ![Sniper](https://trading-tigers.com/assets/img/Gui-Preview01.png)  
@@ -25,7 +25,6 @@ Here are all options:
 '-hp', '--honeypot', default=True, check if your token to buy is a Honeypot'
 '-tp', '--takeprofit', default=0,  Percentage TakeProfit from your input BNB amount, if 0 then not used. e.g. "-tp 50" '
 '-wb', '--awaitBlocks', default=0, Await Blocks before sending BUY Transaction, if 0 then not used. e.g. "-ab 50" '
-'-g', '--gas', default=6, 'int, set Gas in GWEI default 6" '
 ```
 
 
