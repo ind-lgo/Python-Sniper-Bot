@@ -2,7 +2,7 @@
 ![TradingTigers](https://trading-tigers.com/assets/img/TradingTigers.png)  
 Web3 Pancakeswap Sniper&& Take Profit bot written in python3, Please note the license conditions!  
 ### The first Binance Smart Chain sniper bot with Honeypot checker!  
-![Sniper](https://trading-tigers.com/assets/img/preview01.png)  
+![Sniper](https://trading-tigers.com/assets/img/preview001.png)  
 # Infos
 You pay 0.7% fees on each transaction.
 
