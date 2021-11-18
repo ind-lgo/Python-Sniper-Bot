@@ -48,10 +48,75 @@
 	},
 	{
 		"inputs": [],
+		"name": "FEEDOMINATOR",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "Liquidity",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "LiquidityAmount",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
 		"name": "ROUTER",
 		"outputs": [
 			{
 				"internalType": "contract IDEXROUTER",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "TIGS",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "WBNB",
+		"outputs": [
+			{
+				"internalType": "address",
 				"name": "",
 				"type": "address"
 			}
@@ -78,6 +143,19 @@
 		"type": "function"
 	},
 	{
+		"inputs": [],
+		"name": "autoLiquidityReceiver",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
 		"inputs": [
 			{
 				"internalType": "address",
@@ -91,6 +169,26 @@
 				"internalType": "bool[]",
 				"name": "Honeypot",
 				"type": "bool[]"
+			},
+			{
+				"internalType": "uint256",
+				"name": "BuyExpectedOut",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "BuyRealOut",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "SellExpectedOut",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "SellRealOut",
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "nonpayable",
@@ -237,6 +335,25 @@
 			{
 				"internalType": "uint256",
 				"name": "BNBPrice",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_amountToSwap",
+				"type": "uint256"
+			}
+		],
+		"name": "getFee",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
 				"type": "uint256"
 			}
 		],
@@ -401,35 +518,6 @@
 		"inputs": [
 			{
 				"internalType": "address",
-				"name": "token",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "inputBNB",
-				"type": "uint256"
-			}
-		],
-		"name": "getSwapLose",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "BNBlose",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "input",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
 				"name": "_DEV",
 				"type": "address"
 			}
@@ -442,12 +530,40 @@
 	{
 		"inputs": [
 			{
-				"internalType": "uint16",
+				"internalType": "uint256",
 				"name": "_FEES",
-				"type": "uint16"
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_FEEDOMINATOR",
+				"type": "uint256"
 			}
 		],
 		"name": "setFEES",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_autoLiquidityReceiver",
+				"type": "address"
+			},
+			{
+				"internalType": "bool",
+				"name": "_liquidity",
+				"type": "bool"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_LiquidityAmount",
+				"type": "uint256"
+			}
+		],
+		"name": "setLiquidy",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"

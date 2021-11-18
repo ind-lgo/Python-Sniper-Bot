@@ -2,8 +2,8 @@ from web3 import Web3
 import json
 from style import style
 
-class Txn_bot():
 
+class TXN():
     def __init__(self, token_address, quantity):
         self.w3 = self.connect()
         self.address, self.private_key = self.set_address()
@@ -13,7 +13,6 @@ class Txn_bot():
         self.slippageBUY, self.slippageSELL = self.setSlippage()
         self.quantity = quantity 
         self.gas_price = self.setGas()
-        self.WBNB = Web3.toChecksumAddress("0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c")
 
     def connect(self):
         with open("./Settings.json") as f:
@@ -25,7 +24,6 @@ class Txn_bot():
         with open("./Settings.json") as f:
             keys = json.load(f)
         return int(keys['GAS'] * (10**9))
-        
 
     def set_address(self):
         with open("./Settings.json") as f:
@@ -47,21 +45,18 @@ class Txn_bot():
     def getBlockHigh(self):
         return self.w3.eth.block_number
 
-
     def set_router(self):
-        router_address = Web3.toChecksumAddress("0xdeC8108c4415d5c18D9Ff024c84d6b35BdAd38FA") 
+        router_address = Web3.toChecksumAddress("0x7437122D8E2Cf47326cB341bc2C357a3324c14eD") 
         with open("./abis/BSC_Swapper.json") as f:
             contract_abi = json.load(f)
         router = self.w3.eth.contract(address=router_address, abi=contract_abi)
         return (router_address, router)
-
 
     def set_token_contract(self):
         with open("./abis/bep20_abi_token.json") as f:
             contract_abi = json.load(f)
         token_contract = self.w3.eth.contract(address=self.token_address, abi=contract_abi)
         return token_contract
-
 
     def get_token_balance(self): 
         return self.token_contract.functions.balanceOf(self.address).call() / (10 ** self.token_contract.functions.decimals().call())
@@ -75,10 +70,6 @@ class Txn_bot():
         gas = gas + (gas / 10) # Adding 1/10 from gas to gas!
         return gas
 
-    def HoneypotCall(self):
-        return self.router.functions.checkHoneypot(self.token_address).call()
-
-
     def getOutputfromBNBtoToken(self):
         Amount = self.router.functions.getOutputfromBNBtoToken(
             int(self.quantity * (10**18)),
@@ -86,14 +77,12 @@ class Txn_bot():
             ).call()
         return Amount
 
-
     def getOutputfromTokentoBNB(self):
         Amount = self.router.functions.getOutputfromTokentoBNB(
             int(self.token_contract.functions.balanceOf(self.address).call()),
             self.token_address,
             ).call()
         return Amount
-
 
     def buy_token(self):
         self.quantity = self.quantity * (10**18)
@@ -113,7 +102,7 @@ class Txn_bot():
             self.private_key
         )
         txn = self.w3.eth.sendRawTransaction(signed_txn.rawTransaction)
-        print(style.GREEN + "\nTX Hash:",txn.hex() + style.RESET)
+        print(style.GREEN + "\nBUY Hash:",txn.hex() + style.RESET)
         txn_receipt = self.w3.eth.waitForTransactionReceipt(txn)
         if txn_receipt["status"] == 1: return True,style.GREEN +"\nBUY Transaction Successfull!" + style.RESET
         else: return False, style.RED +"\nBUY Transaction Faild!" + style.RESET
@@ -144,7 +133,7 @@ class Txn_bot():
                 self.private_key
             )
             txn = self.w3.eth.sendRawTransaction(signed_txn.rawTransaction)
-            print(style.GREEN + "\nApproved :",txn.hex()+style.RESET)
+            print(style.GREEN + "\nApprove Hash:",txn.hex()+style.RESET)
             txn_receipt = self.w3.eth.waitForTransactionReceipt(txn)   
             if txn_receipt["status"] == 1: return True,style.GREEN +"\nApprove Successfull!"+ style.RESET
             else: return False, style.RED +"\nApprove Transaction Faild!"+ style.RESET
@@ -170,7 +159,7 @@ class Txn_bot():
             self.private_key
         )
         txn = self.w3.eth.sendRawTransaction(signed_txn.rawTransaction)
-        print(style.GREEN + "\nSELL TOKENS :",txn.hex() + style.RESET)
+        print(style.GREEN + "\nSELL Hash :",txn.hex() + style.RESET)
         txn_receipt = self.w3.eth.waitForTransactionReceipt(txn)
         if txn_receipt["status"] == 1: return True,style.GREEN +"\nSELL Transaction Successfull!" + style.RESET
         else: return False, style.RED +"\nSELL Transaction Faild!" + style.RESET
