@@ -1,7 +1,3 @@
-
-
-
-import time
 from txn import TXN
 import argparse, math, sys, json, requests
 from time import sleep

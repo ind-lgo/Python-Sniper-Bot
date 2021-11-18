@@ -1,4 +1,4 @@
-# 🚀 Pancakeswap_BSC_Sniper_Bot 🚀
+# 🚀 Pancakeswap BSC Sniper Bot 🚀
 ![TradingTigers](https://trading-tigers.com/assets/img/TradingTigers.png)  
 Web3 Pancakeswap Sniper && Take Profit/StopLose bot written in python3, Please note the license conditions!
 ### The first Binance Smart Chain sniper bot with Honeypot checker!  
