@@ -61,11 +61,12 @@ class SniperBot():
             print(style.RED+"Please Check your Token argument e.g. -t 0x34faa80fec0233e045ed4737cc152a71e490e2e3")
             print("exit!")
             sys.exit()
-        self.amount = args.amount   
-        if self.amount == 0:
-            print(style.RED+"Please Check your Amount argument e.g. -a 0.01")
-            print("exit!")
-            sys.exit()
+        self.amount = args.amount  
+        if not args.sellonly: 
+            if self.amount == 0:
+                print(style.RED+"Please Check your Amount argument e.g. -a 0.01")
+                print("exit!")
+                sys.exit()
         self.tx = args.txamount
         self.amountForSnipe = float(self.amount) / float(self.tx)
         self.hp = args.honeypot
