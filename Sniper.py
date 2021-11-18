@@ -1,4 +1,4 @@
-from txn import TXN
+from txns import TXN
 import argparse, math, sys, json, requests
 from time import sleep
 from halo import Halo
