@@ -6,7 +6,7 @@ Web3 Pancakeswap Sniper && Take Profit/StopLose bot written in python3, Please n
 # Infos
 You pay [0.7% Tax](https://docs.trading-tigers.com/tokenomics/tokenomics) on each transaction.
 ### Support Us&You by Buying [TradingTigers Token](https://bscscan.com/token/0x34faa80fec0233e045ed4737cc152a71e490e2e3)  
-![Sniper](https://trading-tigers.com/assets/img/Gui-Preview01.png)  
+![Sniper](https://trading-tigers.com/assets/img/preview002.png)  
 
 # Download
 ### If you are not familiar with Python please have a look at [Releases](https://github.com/Trading-Tiger/Pancakeswap_BSC_Sniper_Bot/releases), there you can download Windows executable.

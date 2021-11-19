@@ -142,7 +142,6 @@ class SniperBot():
                 break
         print(style().GREEN+"[DONE] Wait Blocks finish!")
         
-
     def awaitLiquidity(self):
         spinner = Halo(text='await Liquidity', spinner=spinneroptions)
         spinner.start()
