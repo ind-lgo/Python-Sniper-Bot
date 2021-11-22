@@ -39,7 +39,7 @@ class SniperBot():
 
     def SayWelcome(self):
         print(style().YELLOW + ascii+ style().RESET)
-        print(style().GREEN +"""Attention, they pay 0.7% fees on each transaction."""+ style().RESET)
+        print(style().GREEN +"""Attention, You pay a 0.7% Tax on your swap amount!"""+ style().RESET)
         print(style().GREEN +"Start Sniper Tool with following arguments:"+ style().RESET)
         print(style().BLUE + "---------------------------------"+ style().RESET)
         print(style().YELLOW + "Amount for Buy:",style().GREEN + str(self.amount) + " BNB"+ style().RESET)
