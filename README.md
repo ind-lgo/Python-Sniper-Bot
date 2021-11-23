@@ -18,7 +18,7 @@ Run on Android you need Install [Termux](https://termux.com/)
 ```shell
 termux: $ pkg install python git
 Debian/Ubuntu: $ sudo apt install python3 git make gcc
-Windows: Need to install Visual Studio BuildTools.
+Windows: Need to install Visual Studio BuildTools & Python3
 ```
 
 ### Setup your Address and secret key in Settings.json.
@@ -54,7 +54,7 @@ Here are all options with infos:
 '-wb' or '--awaitBlocks', default=0, Await Blocks before sending BUY Transaction. e.g. "-ab 50" 
 
 '-so' or '--sellonly', Sell ALL your Tokens from given token address
-'-bo' or '--buyonly', Buy Tokens with from your given amount
+'-bo' or '--buyonly', Buy Tokens with your given amount
 
-* = requires
+* = require every time its runs!
 ```
