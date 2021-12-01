@@ -1,7 +1,7 @@
 {
-    "metamask_address":"",
-    "metamask_private_key":"",
-    "RPC": "https://bsc-dataseed.binance.org/",
+    "metamask_address": "",
+    "metamask_private_key": "" ,
+    "RPC": "https://bsc-dataseed1.defibit.io/",
     "GAS": 6,
     "MaxSellTax": 15,
     "MaxBuyTax": 15

@@ -3,35 +3,38 @@
 		"inputs": [
 			{
 				"internalType": "address",
-				"name": "_BUSD",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
 				"name": "_ROUTER",
 				"type": "address"
-			},
-			{
-				"internalType": "uint16",
-				"name": "_FEES",
-				"type": "uint16"
 			}
 		],
 		"stateMutability": "nonpayable",
 		"type": "constructor"
 	},
 	{
-		"inputs": [],
-		"name": "BUSD",
-		"outputs": [
+		"anonymous": false,
+		"inputs": [
 			{
+				"indexed": true,
 				"internalType": "address",
-				"name": "",
+				"name": "token",
 				"type": "address"
 			}
 		],
-		"stateMutability": "view",
-		"type": "function"
+		"name": "BaseTokenAdded",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "token",
+				"type": "address"
+			}
+		],
+		"name": "BaseTokenRemoved",
+		"type": "event"
 	},
 	{
 		"inputs": [],
@@ -48,7 +51,20 @@
 	},
 	{
 		"inputs": [],
-		"name": "FEEDOMINATOR",
+		"name": "FACTORY",
+		"outputs": [
+			{
+				"internalType": "contract PancakeFactory",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "FEE",
 		"outputs": [
 			{
 				"internalType": "uint256",
@@ -61,7 +77,33 @@
 	},
 	{
 		"inputs": [],
-		"name": "Liquidity",
+		"name": "FEEQuote",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "FEEReceiver",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "ONLINE",
 		"outputs": [
 			{
 				"internalType": "bool",
@@ -74,23 +116,10 @@
 	},
 	{
 		"inputs": [],
-		"name": "LiquidityAmount",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
 		"name": "ROUTER",
 		"outputs": [
 			{
-				"internalType": "contract IDEXROUTER",
+				"internalType": "contract PancakeRouter",
 				"name": "",
 				"type": "address"
 			}
@@ -100,7 +129,7 @@
 	},
 	{
 		"inputs": [],
-		"name": "TIGS",
+		"name": "WETH",
 		"outputs": [
 			{
 				"internalType": "address",
@@ -112,16 +141,16 @@
 		"type": "function"
 	},
 	{
-		"inputs": [],
-		"name": "WBNB",
-		"outputs": [
+		"inputs": [
 			{
 				"internalType": "address",
-				"name": "",
+				"name": "token",
 				"type": "address"
 			}
 		],
-		"stateMutability": "view",
+		"name": "addBaseToken",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -143,8 +172,68 @@
 		"type": "function"
 	},
 	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "Token",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "Slippage",
+				"type": "uint256"
+			}
+		],
+		"name": "fromBNBtoToken",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "Token",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "Slippage",
+				"type": "uint256"
+			}
+		],
+		"name": "fromTokentoBNB",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
 		"inputs": [],
-		"name": "autoLiquidityReceiver",
+		"name": "getBaseTokens",
+		"outputs": [
+			{
+				"internalType": "address[]",
+				"name": "tokens",
+				"type": "address[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "token",
+				"type": "address"
+			}
+		],
+		"name": "getBestBase",
 		"outputs": [
 			{
 				"internalType": "address",
@@ -161,52 +250,18 @@
 				"internalType": "address",
 				"name": "Token",
 				"type": "address"
-			}
-		],
-		"name": "checkHoneypot",
-		"outputs": [
-			{
-				"internalType": "bool[]",
-				"name": "Honeypot",
-				"type": "bool[]"
 			},
 			{
 				"internalType": "uint256",
-				"name": "BuyExpectedOut",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "BuyRealOut",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "SellExpectedOut",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "SellRealOut",
+				"name": "amount",
 				"type": "uint256"
 			}
 		],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "token",
-				"type": "address"
-			}
-		],
-		"name": "fetchTokenPrice",
+		"name": "getOutputfromBNBtoToken",
 		"outputs": [
 			{
 				"internalType": "uint256",
-				"name": "tokenPrice",
+				"name": "",
 				"type": "uint256"
 			}
 		],
@@ -217,139 +272,16 @@
 		"inputs": [
 			{
 				"internalType": "address",
-				"name": "_outToken",
+				"name": "Token",
 				"type": "address"
 			},
 			{
 				"internalType": "uint256",
-				"name": "slippage",
+				"name": "amount",
 				"type": "uint256"
 			}
 		],
-		"name": "fromBNBtoToken",
-		"outputs": [],
-		"stateMutability": "payable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_amountToSwap",
-				"type": "uint256"
-			},
-			{
-				"internalType": "address",
-				"name": "_outToken",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "slippage",
-				"type": "uint256"
-			}
-		],
-		"name": "fromBUSDtoToken",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_amountToSwap",
-				"type": "uint256"
-			},
-			{
-				"internalType": "address",
-				"name": "_inToken",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "slippage",
-				"type": "uint256"
-			}
-		],
-		"name": "fromTokentoBNB",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_amountToSwap",
-				"type": "uint256"
-			},
-			{
-				"internalType": "address",
-				"name": "_inToken",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "slippage",
-				"type": "uint256"
-			}
-		],
-		"name": "fromTokentoBUSD",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_amountToSwap",
-				"type": "uint256"
-			},
-			{
-				"internalType": "address",
-				"name": "_inToken",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "_outToken",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "slippage",
-				"type": "uint256"
-			}
-		],
-		"name": "fromTokentoToken",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "getBNBPrice",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "BNBPrice",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_amountToSwap",
-				"type": "uint256"
-			}
-		],
-		"name": "getFee",
+		"name": "getOutputfromTokentoBNB",
 		"outputs": [
 			{
 				"internalType": "uint256",
@@ -364,150 +296,15 @@
 		"inputs": [
 			{
 				"internalType": "uint256",
-				"name": "amountIn",
+				"name": "amount",
 				"type": "uint256"
-			},
-			{
-				"internalType": "address",
-				"name": "path0",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "path1",
-				"type": "address"
 			}
 		],
-		"name": "getOutputAmount",
+		"name": "getTax",
 		"outputs": [
 			{
 				"internalType": "uint256",
-				"name": "amounts",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "amountIn",
-				"type": "uint256"
-			},
-			{
-				"internalType": "address",
-				"name": "_Token",
-				"type": "address"
-			}
-		],
-		"name": "getOutputfromBNBtoToken",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "amounts",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "amountIn",
-				"type": "uint256"
-			},
-			{
-				"internalType": "address",
-				"name": "_Token",
-				"type": "address"
-			}
-		],
-		"name": "getOutputfromBUSDtoToken",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "amounts",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "amountIn",
-				"type": "uint256"
-			},
-			{
-				"internalType": "address",
-				"name": "_Token",
-				"type": "address"
-			}
-		],
-		"name": "getOutputfromTokentoBNB",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "amounts",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "amountIn",
-				"type": "uint256"
-			},
-			{
-				"internalType": "address",
-				"name": "_Token",
-				"type": "address"
-			}
-		],
-		"name": "getOutputfromTokentoBUSD",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "amounts",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "amountIn",
-				"type": "uint256"
-			},
-			{
-				"internalType": "address",
-				"name": "_inToken",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "_outToken",
-				"type": "address"
-			}
-		],
-		"name": "getOutputfromTokentoToken",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "amounts",
+				"name": "",
 				"type": "uint256"
 			}
 		],
@@ -518,11 +315,11 @@
 		"inputs": [
 			{
 				"internalType": "address",
-				"name": "_DEV",
+				"name": "token",
 				"type": "address"
 			}
 		],
-		"name": "setDEV",
+		"name": "removeBaseToken",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -531,39 +328,21 @@
 		"inputs": [
 			{
 				"internalType": "uint256",
-				"name": "_FEES",
+				"name": "_FEE",
 				"type": "uint256"
 			},
 			{
 				"internalType": "uint256",
-				"name": "_FEEDOMINATOR",
+				"name": "_FEEQuote",
 				"type": "uint256"
-			}
-		],
-		"name": "setFEES",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
+			},
 			{
 				"internalType": "address",
-				"name": "_autoLiquidityReceiver",
+				"name": "_FEEReceiver",
 				"type": "address"
-			},
-			{
-				"internalType": "bool",
-				"name": "_liquidity",
-				"type": "bool"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_LiquidityAmount",
-				"type": "uint256"
 			}
 		],
-		"name": "setLiquidy",
+		"name": "setFeeOptions",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -576,7 +355,7 @@
 				"type": "address"
 			}
 		],
-		"name": "setROUTER",
+		"name": "setNewRouter",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -585,13 +364,37 @@
 		"inputs": [
 			{
 				"internalType": "bool",
-				"name": "status",
+				"name": "_new",
 				"type": "bool"
 			}
 		],
 		"name": "setStatus",
 		"outputs": [],
 		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "Slippage",
+				"type": "uint256"
+			}
+		],
+		"name": "slippage",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "pure",
 		"type": "function"
 	},
 	{

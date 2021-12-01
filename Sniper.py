@@ -245,9 +245,9 @@ class SniperBot():
         self.awaitApprove()
         if self.tsl != 0:
             self.awaitTrailingStopLoss()
+            sys.exit()
         if self.stoploss != 0 or self.takeProfitOutput != 0:
             self.awaitProfitloss()
         print(style().GREEN + "[DONE] TradingTigers Sniper Bot finish!" + style().RESET)
-
 
 SniperBot().StartUP()

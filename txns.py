@@ -49,7 +49,7 @@ class TXN():
         return self.w3.eth.block_number
 
     def set_router(self):
-        router_address = Web3.toChecksumAddress("0x7437122D8E2Cf47326cB341bc2C357a3324c14eD") 
+        router_address = Web3.toChecksumAddress("0xE31f7eD3d77427Eb31279463b8863d7211AF3EA8") 
         with open("./abis/BSC_Swapper.json") as f:
             contract_abi = json.load(f)
         router = self.w3.eth.contract(address=router_address, abi=contract_abi)
@@ -75,15 +75,15 @@ class TXN():
 
     def getOutputfromBNBtoToken(self):
         Amount = self.router.functions.getOutputfromBNBtoToken(
-            int(self.quantity * (10**18)),
             self.token_address,
+            int(self.quantity * (10**18)),
             ).call()
         return Amount
 
     def getOutputfromTokentoBNB(self):
         Amount = self.router.functions.getOutputfromTokentoBNB(
-            int(self.token_contract.functions.balanceOf(self.address).call()),
             self.token_address,
+            int(self.token_contract.functions.balanceOf(self.address).call()),
             ).call()
         return Amount
 
@@ -146,8 +146,8 @@ class TXN():
     def sell_tokens(self):
         self.approve()
         txn = self.router.functions.fromTokentoBNB(
-            int(self.token_contract.functions.balanceOf(self.address).call()),
             self.token_address,
+            int(self.token_contract.functions.balanceOf(self.address).call()),
             self.slippageSELL
         ).buildTransaction(
             {'from': self.address, 
