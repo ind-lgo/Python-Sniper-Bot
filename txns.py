@@ -17,7 +17,10 @@ class TXN():
     def connect(self):
         with open("./Settings.json") as f:
             keys = json.load(f)
-        w3 = Web3(Web3.HTTPProvider(keys["RPC"]))
+        if keys["RPC"][:2].lower() == "ws":
+            w3 = Web3(Web3.WebsocketProvider(keys["RPC"]))
+        else:
+            w3 = Web3(Web3.HTTPProvider(keys["RPC"]))
         return w3
 
     def setGas(self):
