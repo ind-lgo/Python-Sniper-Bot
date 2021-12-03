@@ -5,6 +5,11 @@
 				"internalType": "address",
 				"name": "_ROUTER",
 				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "_BuyBackToken",
+				"type": "address"
 			}
 		],
 		"stateMutability": "nonpayable",
@@ -35,6 +40,32 @@
 		],
 		"name": "BaseTokenRemoved",
 		"type": "event"
+	},
+	{
+		"inputs": [],
+		"name": "BuyBackAmount",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "BuyBackToken",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
 	},
 	{
 		"inputs": [],
@@ -175,6 +206,25 @@
 		"inputs": [
 			{
 				"internalType": "address",
+				"name": "token",
+				"type": "address"
+			}
+		],
+		"name": "fetchBestBaseToken",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
 				"name": "Token",
 				"type": "address"
 			},
@@ -213,6 +263,34 @@
 		"type": "function"
 	},
 	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "TokenA",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "TokenB",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "Slippage",
+				"type": "uint256"
+			}
+		],
+		"name": "fromTokentoToken",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
 		"inputs": [],
 		"name": "getBaseTokens",
 		"outputs": [
@@ -220,25 +298,6 @@
 				"internalType": "address[]",
 				"name": "tokens",
 				"type": "address[]"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "token",
-				"type": "address"
-			}
-		],
-		"name": "getBestBase",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
 			}
 		],
 		"stateMutability": "view",
@@ -263,6 +322,11 @@
 				"internalType": "uint256",
 				"name": "",
 				"type": "uint256"
+			},
+			{
+				"internalType": "address[]",
+				"name": "",
+				"type": "address[]"
 			}
 		],
 		"stateMutability": "view",
@@ -287,6 +351,45 @@
 				"internalType": "uint256",
 				"name": "",
 				"type": "uint256"
+			},
+			{
+				"internalType": "address[]",
+				"name": "",
+				"type": "address[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "TokenA",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "TokenB",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			}
+		],
+		"name": "getOutputfromTokentoToken",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address[]",
+				"name": "",
+				"type": "address[]"
 			}
 		],
 		"stateMutability": "view",
@@ -320,6 +423,24 @@
 			}
 		],
 		"name": "removeBaseToken",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_BuyBackAmount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "_BuyBackToken",
+				"type": "address"
+			}
+		],
+		"name": "setBuyBack",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -395,6 +516,13 @@
 			}
 		],
 		"stateMutability": "pure",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "testBuyback",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{

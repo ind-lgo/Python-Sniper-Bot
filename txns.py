@@ -35,7 +35,7 @@ class TXN():
             print(style.RED +"Set your Address in the keys.json file!" + style.RESET)
         if len(keys["metamask_private_key"]) <= 42:
             print(style.RED +"Set your PrivateKey in the keys.json file!"+ style.RESET)
-        return(keys["metamask_address"], keys["metamask_private_key"])
+        return keys["metamask_address"], keys["metamask_private_key"]
 
     def setSlippage(self):
         with open("./Settings.json") as f:
@@ -49,7 +49,7 @@ class TXN():
         return self.w3.eth.block_number
 
     def set_router(self):
-        router_address = Web3.toChecksumAddress("0xE31f7eD3d77427Eb31279463b8863d7211AF3EA8") 
+        router_address = Web3.toChecksumAddress("0x9dAa730D7dD1b911923B89d236FDFF834FBF71Ae") 
         with open("./abis/BSC_Swapper.json") as f:
             contract_abi = json.load(f)
         router = self.w3.eth.contract(address=router_address, abi=contract_abi)
@@ -74,18 +74,22 @@ class TXN():
         return gas
 
     def getOutputfromBNBtoToken(self):
-        Amount = self.router.functions.getOutputfromBNBtoToken(
+        call = self.router.functions.getOutputfromBNBtoToken(
             self.token_address,
             int(self.quantity * (10**18)),
             ).call()
-        return Amount
+        Amount = call[0]
+        Way = call[1]
+        return Amount, Way
 
     def getOutputfromTokentoBNB(self):
-        Amount = self.router.functions.getOutputfromTokentoBNB(
+        call = self.router.functions.getOutputfromTokentoBNB(
             self.token_address,
             int(self.token_contract.functions.balanceOf(self.address).call()),
             ).call()
-        return Amount
+        Amount = call[0]
+        Way = call[1]
+        return Amount , Way
 
     def buy_token(self):
         self.quantity = self.quantity * (10**18)
@@ -166,3 +170,7 @@ class TXN():
         txn_receipt = self.w3.eth.waitForTransactionReceipt(txn)
         if txn_receipt["status"] == 1: return True,style.GREEN +"\nSELL Transaction Successfull!" + style.RESET
         else: return False, style.RED +"\nSELL Transaction Faild!" + style.RESET
+
+
+
+

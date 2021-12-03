@@ -160,7 +160,7 @@ class SniperBot():
         while True:
             sleep(0.07)
             try:
-                self.TXN.getOutputfromBNBtoToken()
+                self.TXN.getOutputfromBNBtoToken()[0]
                 spinner.stop()
                 break
             except Exception as e:
@@ -176,35 +176,45 @@ class SniperBot():
         TokenBalance = round(self.TXN.get_token_balance(),5)
         while True:
             sleep(0.3)
-            Output = float(self.TXN.getOutputfromTokentoBNB() / (10**18))
-            print(f"Token Balance: {TokenBalance} current output:", "{0:.8f}".format(Output), end="\r")
-            if self.takeProfitOutput != 0:
-                if Output >= self.takeProfitOutput:
-                    print()
-                    print(style().GREEN+"[TAKE PROFIT] Triggert!"+ style().RESET)
-                    self.awaitSell()
-                    break
-            if self.stoploss != 0:
-                if Output <= self.stoploss:
-                    print()
-                    print(style().GREEN+"[STOP LOSS] Triggert!"+ style().RESET)
-                    self.awaitSell()
-                    break
+            try:
+                Output = float(self.TXN.getOutputfromTokentoBNB()[0] / (10**18))
+                print(f"Token Balance: {TokenBalance} current output:", "{0:.8f}".format(Output), end="\r")
+                if self.takeProfitOutput != 0:
+                    if Output >= self.takeProfitOutput:
+                        print()
+                        print(style().GREEN+"[TAKE PROFIT] Triggert!"+ style().RESET)
+                        self.awaitSell()
+                        break
+                if self.stoploss != 0:
+                    if Output <= self.stoploss:
+                        print()
+                        print(style().GREEN+"[STOP LOSS] Triggert!"+ style().RESET)
+                        self.awaitSell()
+                        break
+            except Exception as e:
+                if "UPDATE" in str(e):
+                    print(e)
+                    sys.exit()
         print(style().GREEN+"[DONE] TakeProfit/StopLoss Finished!"+ style().RESET)
 
     def awaitTrailingStopLoss(self):
         highestLastPrice = 0
         while True:
             sleep(0.3)
-            LastPrice = float(self.TXN.getOutputfromTokentoBNB() / (10**18))
-            if LastPrice > highestLastPrice:
-                highestLastPrice = LastPrice
-                TrailingStopLoss = self.calcNewTrailingStop(LastPrice)
-            if LastPrice < TrailingStopLoss:
-                print(style().GREEN+"[TRAILING STOP LOSS] Triggert!"+ style().RESET)
-                self.awaitSell()
-                break
-            print("Sell below","{0:.8f}".format(TrailingStopLoss),"| CurrentOutput:", "{0:.8f}".format(LastPrice), end="\r")
+            try:
+                LastPrice = float(self.TXN.getOutputfromTokentoBNB()[0] / (10**18))
+                if LastPrice > highestLastPrice:
+                    highestLastPrice = LastPrice
+                    TrailingStopLoss = self.calcNewTrailingStop(LastPrice)
+                if LastPrice < TrailingStopLoss:
+                    print(style().GREEN+"[TRAILING STOP LOSS] Triggert!"+ style().RESET)
+                    self.awaitSell()
+                    break
+                print("Sell below","{0:.8f}".format(TrailingStopLoss),"| CurrentOutput:", "{0:.8f}".format(LastPrice), end="\r")
+            except Exception as e:
+                if "UPDATE" in str(e):
+                    print(e)
+                    sys.exit()
         print(style().GREEN+"[DONE] TrailingStopLoss Finished!"+ style().RESET)
 
 
