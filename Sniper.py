@@ -164,7 +164,7 @@ class SniperBot():
                 spinner.stop()
                 break
             except Exception as e:
-                print(e)
+                #print(e)
                 if "UPDATE" in str(e):
                     print(e)
                     sys.exit()
