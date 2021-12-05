@@ -65,5 +65,5 @@ Here are all options with infos:
 
 * = require every time its runs!
 ```
-## New Feature, Trailing-Stop-Loss:
+## Trailing-Stop-Loss:
 <img src="https://i.ytimg.com/vi/dZFb0-fwqOk/maxresdefault.jpg" height="400">
