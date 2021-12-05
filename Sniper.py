@@ -125,7 +125,7 @@ class SniperBot():
         spinner.start()
         self.TXN = TXN(self.token, self.amountForSnipe)
         tx = self.TXN.sell_tokens()
-        spinner.start()
+        spinner.stop()
         print(tx[1])
         if tx[0] != True:
             sys.exit() 
