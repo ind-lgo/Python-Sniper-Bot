@@ -66,7 +66,6 @@ class TXN():
 
     def checkToken(self):
         tokenInfos = self.swapper.functions.getTokenInfos(self.token_address).call()
-        print(tokenInfos)
         buy_tax = round((tokenInfos[0] - tokenInfos[1]) / tokenInfos[0] * 100) 
         sell_tax = round((tokenInfos[2] - tokenInfos[3]) / tokenInfos[2] * 100)
         if tokenInfos[5] and tokenInfos[6] == True:
