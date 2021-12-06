@@ -29,6 +29,7 @@ args = parser.parse_args()
 
 
 class SniperBot():
+
     def __init__(self):
         self.parseArgs()
         self.settings = self.loadSettings()
@@ -49,6 +50,8 @@ class SniperBot():
         print(style().YELLOW + "Transaction to send:",style().GREEN + str(self.tx)+ style().RESET)
         print(style().YELLOW + "Amount per transaction :",style().GREEN + str("{0:.8f}".format(self.amountForSnipe))+ style().RESET)
         print(style().YELLOW + "Await Blocks before buy :",style().GREEN + str(self.wb)+ style().RESET)
+        if self.tsl != 0:
+            print(style().YELLOW + "Trailing Stop loss Percent :",style().GREEN + str(self.tsl)+ style().RESET)
         if self.tp != 0:
             print(style().YELLOW + "Take Profit Percent :",style().GREEN + str(self.tp)+ style().RESET)
             print(style().YELLOW + "Target Output for Take Profit:",style().GREEN +str("{0:.8f}".format(self.takeProfitOutput))+ style().RESET)
@@ -98,15 +101,6 @@ class SniperBot():
         a = (currentPrice  * self.tsl) / 100
         b = currentPrice - a
         return b
-
-    def getTaxHoneypot(self):
-        url = f"https://ishoneypot.trading-tigers.com/token/{self.token}"
-        r = requests.get(url)
-        jres = json.loads(r.text)
-        if jres['HONEYPOT']  == False:
-            return False, jres['SELLTAX'], jres['BUYTAX']
-        elif jres['HONEYPOT'] == True:
-            return True, 0, 0
 
     def awaitBuy(self):
         spinner = Halo(text='await Buy', spinner=spinneroptions)
@@ -164,62 +158,51 @@ class SniperBot():
                 spinner.stop()
                 break
             except Exception as e:
-                #print(e)
                 if "UPDATE" in str(e):
                     print(e)
                     sys.exit()
                 continue
+
         print(style().GREEN+"[DONE] Liquidity is Added!"+ style().RESET)
     
-
-    def awaitProfitloss(self):
+    def awaitMangePosition(self):
+        highestLastPrice = 0
         TokenBalance = round(self.TXN.get_token_balance(),5)
         while True:
             sleep(0.3)
             try:
-                Output = float(self.TXN.getOutputfromTokentoBNB()[0] / (10**18))
-                print(f"Token Balance: {TokenBalance} current output:", "{0:.8f}".format(Output), end="\r")
+                LastPrice = float(self.TXN.getOutputfromTokentoBNB()[0] / (10**18))
+                if self.tsl != 0:
+                    if LastPrice > highestLastPrice:
+                        highestLastPrice = LastPrice
+                        TrailingStopLoss = self.calcNewTrailingStop(LastPrice)
+                if LastPrice < TrailingStopLoss:
+                    print(style().GREEN+"[TRAILING STOP LOSS] Triggert!"+ style().RESET)
+                    self.awaitSell()
+                    break
                 if self.takeProfitOutput != 0:
-                    if Output >= self.takeProfitOutput:
+                    if LastPrice >= self.takeProfitOutput:
                         print()
                         print(style().GREEN+"[TAKE PROFIT] Triggert!"+ style().RESET)
                         self.awaitSell()
                         break
                 if self.stoploss != 0:
-                    if Output <= self.stoploss:
+                    if LastPrice <= self.stoploss:
                         print()
                         print(style().GREEN+"[STOP LOSS] Triggert!"+ style().RESET)
                         self.awaitSell()
                         break
+                print(f"Token Balance: {TokenBalance}| Sell below","{0:.8f}".format(TrailingStopLoss),"| CurrentOutput:", "{0:.8f}".format(LastPrice), end="\r")
             except Exception as e:
                 if "UPDATE" in str(e):
                     print(e)
                     sys.exit()
-        print(style().GREEN+"[DONE] TakeProfit/StopLoss Finished!"+ style().RESET)
-
-    def awaitTrailingStopLoss(self):
-        highestLastPrice = 0
-        while True:
-            sleep(0.3)
-            try:
-                LastPrice = float(self.TXN.getOutputfromTokentoBNB()[0] / (10**18))
-                if LastPrice > highestLastPrice:
-                    highestLastPrice = LastPrice
-                    TrailingStopLoss = self.calcNewTrailingStop(LastPrice)
-                if LastPrice < TrailingStopLoss:
-                    print(style().GREEN+"[TRAILING STOP LOSS] Triggert!"+ style().RESET)
-                    self.awaitSell()
-                    break
-                print("Sell below","{0:.8f}".format(TrailingStopLoss),"| CurrentOutput:", "{0:.8f}".format(LastPrice), end="\r")
-            except Exception as e:
-                if "UPDATE" in str(e):
-                    print(e)
-                    sys.exit()
-        print(style().GREEN+"[DONE] TrailingStopLoss Finished!"+ style().RESET)
+        print(style().GREEN+"[DONE] Position Manager Finished!"+ style().RESET)
 
 
     def StartUP(self):
         self.TXN = TXN(self.token, self.amountForSnipe)
+
         if args.sellonly:
             print("Start SellOnly, Selling Now all tokens!")
             inp = input("please confirm y/n\n")
@@ -228,36 +211,45 @@ class SniperBot():
                 sys.exit()
             else:
                 sys.exit()
+
         if args.buyonly:
             print(f"Start BuyOnly, buy now with {self.amountForSnipe}BNB tokens!")
             print(self.TXN.buy_token()[1])
             sys.exit()
+
         if args.nobuy != True:
             self.awaitLiquidity()
-        honeyTax = self.getTaxHoneypot()
+
+        honeyTax = self.TXN.checkToken()
+        if self.hp == True:
+            print(style().YELLOW +"Checking Token is Honeypot..." + style().RESET)
+
+            if honeyTax[2] == True:
+                print(style.RED + "Token is Honeypot, exiting")
+                sys.exit() 
+
+            elif honeyTax[2] == False:
+                print(style().GREEN +"[DONE] Token is NOT a Honeypot!" + style().RESET)
+
         if honeyTax[1] > self.settings["MaxSellTax"]:
             print(style().RED+"Token SellTax exceeds Settings.json, exiting!")
             sys.exit()
-        if honeyTax[2] > self.settings["MaxBuyTax"]:
+
+        if honeyTax[0] > self.settings["MaxBuyTax"]:
             print(style().RED+"Token BuyTax exceeds Settings.json, exiting!")
             sys.exit()
-        if self.hp == True:
-            print(style().YELLOW +"Checking Token is Honeypot..." + style().RESET)
-            if honeyTax[0] == True:
-                print(style.RED + "Token is Honeypot, exiting")
-                sys.exit() 
-            elif honeyTax[0] == False:
-                print(style().GREEN +"[DONE] Token is NOT a Honeypot!" + style().RESET)
+
         if self.wb != 0: 
             self.awaitBlocks()
+
         if args.nobuy != True:
             self.awaitBuy()
+
         self.awaitApprove()
-        if self.tsl != 0:
-            self.awaitTrailingStopLoss()
-            sys.exit()
-        if self.stoploss != 0 or self.takeProfitOutput != 0:
-            self.awaitProfitloss()
+
+        if self.tsl != 0 or self.stoploss != 0 or self.takeProfitOutput != 0:
+            self.awaitMangePosition()
+
         print(style().GREEN + "[DONE] TradingTigers Sniper Bot finish!" + style().RESET)
 
 SniperBot().StartUP()
