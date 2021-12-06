@@ -192,7 +192,7 @@ class SniperBot():
                         print(style().GREEN+"[STOP LOSS] Triggert!"+ style().RESET)
                         self.awaitSell()
                         break
-                print(f"Token Balance: {TokenBalance}| Sell below","{0:.8f}".format(TrailingStopLoss),"| CurrentOutput:", "{0:.8f}".format(LastPrice), end="\r")
+                print(f"Token Balance: {TokenBalance}| Sell below","{0:.8f}".format(TrailingStopLoss),"BNB | CurrentOutput:", "{0:.8f}".format(LastPrice),"BNB", end="\r")
             except Exception as e:
                 if "UPDATE" in str(e):
                     print(e)
