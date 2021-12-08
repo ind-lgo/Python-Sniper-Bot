@@ -170,42 +170,35 @@ class SniperBot():
         TokenBalance = round(self.TXN.get_token_balance(),5)
         while True:
             sleep(0.3)
-            try:
-                LastPrice = float(self.TXN.getOutputfromTokentoBNB()[0] / (10**18))
-                if self.tsl != 0:
-                    if LastPrice > highestLastPrice:
-                        highestLastPrice = LastPrice
-                        TrailingStopLoss = self.calcNewTrailingStop(LastPrice)
+            LastPrice = float(self.TXN.getOutputfromTokentoBNB()[0] / (10**18))
+            if self.tsl != 0:
+                if LastPrice > highestLastPrice:
+                    highestLastPrice = LastPrice
+                    TrailingStopLoss = self.calcNewTrailingStop(LastPrice)
                 if LastPrice < TrailingStopLoss:
                     print(style().GREEN+"[TRAILING STOP LOSS] Triggert!"+ style().RESET)
                     self.awaitSell()
                     break
-                if self.takeProfitOutput != 0:
-                    if LastPrice >= self.takeProfitOutput:
-                        print()
-                        print(style().GREEN+"[TAKE PROFIT] Triggert!"+ style().RESET)
-                        self.awaitSell()
-                        break
-                if self.stoploss != 0:
-                    if LastPrice <= self.stoploss:
-                        print()
-                        print(style().GREEN+"[STOP LOSS] Triggert!"+ style().RESET)
-                        self.awaitSell()
-                        break
-
-                msg = str("Token Balance: " + str("{0:.5f}".format(TokenBalance)) + "| CurrentOutput: "+str("{0:.7f}".format(LastPrice))+"BNB")
-                if self.stoploss != 0:
-                    msg = msg + "| Stop loss below: " + str("{0:.7f}".format(self.stoploss)) + "BNB"
-                if self.takeProfitOutput != 0:
-                    msg = msg + "| Take Profit Over: " + str("{0:.7f}".format(TrailingStopLoss)) + "BNB"
-                if self.tsl != 0:  
-                    msg = msg + "| Trailing Stop loss below: " + str("{0:.7f}".format(TrailingStopLoss)) + "BNB"
-                print(msg, end="\r")
-                
-            except Exception as e:
-                if "UPDATE" in str(e):
-                    print(e)
-                    sys.exit()
+            if self.takeProfitOutput != 0:
+                if LastPrice >= self.takeProfitOutput:
+                    print()
+                    print(style().GREEN+"[TAKE PROFIT] Triggert!"+ style().RESET)
+                    self.awaitSell()
+                    break
+            if self.stoploss != 0:
+                if LastPrice <= self.stoploss:
+                    print()
+                    print(style().GREEN+"[STOP LOSS] Triggert!"+ style().RESET)
+                    self.awaitSell()
+                    break
+            msg = str("Token Balance: " + str("{0:.5f}".format(TokenBalance)) + "| CurrentOutput: "+str("{0:.7f}".format(LastPrice))+"BNB")
+            if self.stoploss != 0:
+                msg = msg + "| Stop loss below: " + str("{0:.7f}".format(self.stoploss)) + "BNB"
+            if self.takeProfitOutput != 0:
+                msg = msg + "| Take Profit Over: " + str("{0:.7f}".format(TrailingStopLoss)) + "BNB"
+            if self.tsl != 0:  
+                msg = msg + "| Trailing Stop loss below: " + str("{0:.7f}".format(TrailingStopLoss)) + "BNB"
+            print(msg, end="\r")
         print(style().GREEN+"[DONE] Position Manager Finished!"+ style().RESET)
 
 
