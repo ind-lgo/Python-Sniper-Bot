@@ -12,6 +12,7 @@ ascii = """
 /_/ /_/   \__,_/\__,_/_/_/ /_/\__, /    /_/ /_/\__, /\___/_/  /____/  
                              /____/           /____/                  
 """
+
 spinneroptions = {'interval': 250,'frames': ['🚀 ', '🌙 ', '🚀 ', '🌕 ', '💸 ']}
 parser = argparse.ArgumentParser(description='Set your Token and Amount example: "sniper.py -t 0x34faa80fec0233e045ed4737cc152a71e490e2e3 -a 0.2 -s 15"')
 parser.add_argument('-t', '--token', help='str, Token for snipe e.g. "-t 0x34faa80fec0233e045ed4737cc152a71e490e2e3"')
@@ -25,6 +26,7 @@ parser.add_argument('-tsl', '--trailingstoploss', default=0, nargs="?", const=Tr
 parser.add_argument('-wb', '--awaitBlocks', default=0, nargs="?", const=True, type=int, help='int, Await Blocks before sending BUY Transaction "-ab 50" ')
 parser.add_argument('-so', '--sellonly',  action="store_true", help='Sell all your Tokens from given address')
 parser.add_argument('-bo', '--buyonly',  action="store_true", help='Buy Tokens with from your given amount')
+parser.add_argument('-dsec', '--DisabledSwapEnabledCheck',  action="store_true", help='this argument disabled the SwapEnabled Check!')
 args = parser.parse_args()
 
 
@@ -162,9 +164,27 @@ class SniperBot():
                     print(e)
                     sys.exit()
                 continue
-
         print(style().GREEN+"[DONE] Liquidity is Added!"+ style().RESET)
+
+
+    def awaitEnabledBuy(self):
+        spinner = Halo(text='await Dev Enables Swapping', spinner=spinneroptions)
+        spinner.start()
+        while True:
+            sleep(0.07)
+            try:
+                if self.TXN.checkifTokenBuyDisabled() == False:
+                    spinner.stop()
+                    break
+            except Exception as e:
+                print(e)
+                if "UPDATE" in str(e):
+                    print(e)
+                    sys.exit()
+                continue
+        print(style().GREEN+"[DONE] Swapping is Enabeld!"+ style().RESET)
     
+
     def awaitMangePosition(self):
         highestLastPrice = 0
         TokenBalance = round(self.TXN.get_token_balance(),5)
@@ -191,14 +211,16 @@ class SniperBot():
                     print(style().GREEN+"[STOP LOSS] Triggert!"+ style().RESET)
                     self.awaitSell()
                     break
+
             msg = str("Token Balance: " + str("{0:.5f}".format(TokenBalance)) + "| CurrentOutput: "+str("{0:.7f}".format(LastPrice))+"BNB")
             if self.stoploss != 0:
                 msg = msg + "| Stop loss below: " + str("{0:.7f}".format(self.stoploss)) + "BNB"
             if self.takeProfitOutput != 0:
-                msg = msg + "| Take Profit Over: " + str("{0:.7f}".format(TrailingStopLoss)) + "BNB"
+                msg = msg + "| Take Profit Over: " + str("{0:.7f}".format(self.takeProfitOutput)) + "BNB"
             if self.tsl != 0:  
                 msg = msg + "| Trailing Stop loss below: " + str("{0:.7f}".format(TrailingStopLoss)) + "BNB"
             print(msg, end="\r")
+
         print(style().GREEN+"[DONE] Position Manager Finished!"+ style().RESET)
 
 
@@ -221,32 +243,30 @@ class SniperBot():
 
         if args.nobuy != True:
             self.awaitLiquidity()
+            if args.DisabledSwapEnabledCheck != True:
+                self.awaitEnabledBuy()
 
         honeyTax = self.TXN.checkToken()
         if self.hp == True:
             print(style().YELLOW +"Checking Token is Honeypot..." + style().RESET)
-
             if honeyTax[2] == True:
                 print(style.RED + "Token is Honeypot, exiting")
                 sys.exit() 
-
             elif honeyTax[2] == False:
                 print(style().GREEN +"[DONE] Token is NOT a Honeypot!" + style().RESET)
-
         if honeyTax[1] > self.settings["MaxSellTax"]:
             print(style().RED+"Token SellTax exceeds Settings.json, exiting!")
             sys.exit()
-
         if honeyTax[0] > self.settings["MaxBuyTax"]:
             print(style().RED+"Token BuyTax exceeds Settings.json, exiting!")
             sys.exit()
-
         if self.wb != 0: 
             self.awaitBlocks()
 
         if args.nobuy != True:
             self.awaitBuy()
 
+        sleep(7) # Give the RPC/WS some time to Index your address nonce, make it higher if " ValueError: {'code': -32000, 'message': 'nonce too low'} "
         self.awaitApprove()
 
         if self.tsl != 0 or self.stoploss != 0 or self.takeProfitOutput != 0:
