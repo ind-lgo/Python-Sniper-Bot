@@ -8,7 +8,6 @@ from decimal import *
 # More than 8 Decimals are not supportet in the input from the token buy amount! No impact to Token Decimals!
 getcontext().prec = 8
 
-
 class TXN():
     def __init__(self, token_address, quantity):
         self.w3 = self.connect()
@@ -20,7 +19,6 @@ class TXN():
         self.quantity = quantity 
         self.MaxGasInBNB, self.gas_price = self.setupGas()
 
-
     def connect(self):
         with open("./Settings.json") as f:
             keys = json.load(f)
@@ -30,12 +28,10 @@ class TXN():
             w3 = Web3(Web3.HTTPProvider(keys["RPC"]))
         return w3
 
-
     def setupGas(self):
         with open("./Settings.json") as f:
             keys = json.load(f)
         return keys['MaxTXFeeBNB'], int(keys['GWEI_GAS'] * (10**9))
-
 
     def setup_address(self):
         with open("./Settings.json") as f:
@@ -77,7 +73,6 @@ class TXN():
         token_contract = self.w3.eth.contract(address=self.token_address, abi=contract_abi)
         return token_contract
 
-
     def get_token_balance(self): 
         return self.token_contract.functions.balanceOf(self.address).call() / (10 ** self.token_contract.functions.decimals().call())
 
@@ -94,12 +89,8 @@ class TXN():
 
 
     def checkifTokenBuyDisabled(self):
-        tokenInfos = self.swapper.functions.getTokenInfos(self.token_address).call()
-        if tokenInfos[4] == True:
-            disabled = False
-        else:
-            disabled = True
-        print(disabled)
+        disabled = self.swapper.functions.getTokenInfos(self.token_address).call()[4] #True if Buy is enabled, False if Disabled.
+        #todo: find a solution for bugged tokens that never can be buy.
         return disabled
 
 
@@ -135,7 +126,7 @@ class TXN():
             ).call()
         Amount = call[0]
         Way = call[1]
-        return Amount , Way
+        return Amount, Way
 
 
     def buy_token(self):

@@ -173,11 +173,10 @@ class SniperBot():
         while True:
             sleep(0.07)
             try:
-                if self.TXN.checkifTokenBuyDisabled() == False:
+                if self.TXN.checkifTokenBuyDisabled() == True:
                     spinner.stop()
                     break
             except Exception as e:
-                print(e)
                 if "UPDATE" in str(e):
                     print(e)
                     sys.exit()
