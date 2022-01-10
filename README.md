@@ -12,7 +12,9 @@ Attention, You pay [0.7% Tax](https://docs.trading-tigers.com/tokenomics/tokenom
 
 # Download
 ### If you are not familiar with Python please have a look at [Releases](https://github.com/Trading-Tiger/Pancakeswap_BSC_Sniper_Bot/releases), there you can download Windows executable.
+
 ### Setup your Address and secret key in Settings.json and Run main-GUI.exe.
+## [Visit also the Polygon Matic Sniper bot from our partnership Erra.tech.](https://github.com/erra-tech/Quickswap_MATIC_Sniper_Bot)
 
 # Install
 First of all, you need install Python3+
