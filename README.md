@@ -18,11 +18,14 @@ Attention, You pay [0.7% Tax](https://docs.trading-tigers.com/tokenomics/tokenom
 
 # Install
 First of all, you need install Python3+
-Run on Android you need Install [Termux](https://termux.com/)  
+Run on Android you need Install [Termux](https://termux.com/) only from F-Droid works atm. 
 ```shell
-termux: $ pkg install python git
-Debian/Ubuntu: $ sudo apt install python3 git make gcc
-Windows: Need to install Visual Studio BuildTools & Python3
+termux: 
+$ pkg install python git cmake 
+Debian/Ubuntu: 
+$ sudo apt install python3 git cmake gcc
+Windows:
+You Need to install Visual Studio BuildTools & Python3
 ```
 
 ### Setup your Address and secret key in Settings.json.
@@ -60,6 +63,7 @@ Here are all options with infos:
 
 '-nb' or '--nobuy', No Buy, Skipp buy, if you want to use only TakeProfit/StopLoss/TrailingStopLoss
 '-tp' or '--takeprofit', Percentage TakeProfit from your input BNB amount. e.g. "-tp 50" 
+'-sl' or '--stoploss', Percentage StopLoss from your input BNB amount. e.g. "-sl 50" 
 '-tsl'or '--trailingstoploss', 'Percentage Trailing-Stop-loss from your first Quote "-tsl 50"
 
 '-so' or '--sellonly', Sell ALL your Tokens from given token address
