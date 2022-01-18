@@ -79,7 +79,7 @@ class TXN():
             honeypot = False
         else:
             honeypot = True
-        print("\nCurrent Token BuyTax:",buy_tax, "Current Token SellTax:"sell_tax)
+        print("\nCurrent Token BuyTax:",buy_tax, "Current Token SellTax:",sell_tax)
         return buy_tax, sell_tax, honeypot
 
 
