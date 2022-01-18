@@ -1,5 +1,5 @@
 from web3 import Web3
-import json
+import json, sys
 from style import style
 
 
@@ -44,28 +44,23 @@ class TXN():
             sys.exit()
         return keys["metamask_address"], keys["metamask_private_key"]
 
-
     def setupSlippage(self):
         with open("./Settings.json") as f:
             keys = json.load(f)
         return keys['Slippage']
 
-
     def get_token_decimals(self):
         return self.token_contract.functions.decimals().call()
-
 
     def getBlockHigh(self):
         return self.w3.eth.block_number
 
-
     def setup_swapper(self):
-        swapper_address = Web3.toChecksumAddress("0xAfbd3c3ED030d45484E10334aB9b15C3414DD142") 
+        swapper_address = Web3.toChecksumAddress("0x06Ebf173418591927E645937536eb54a6D4060Cc") 
         with open("./abis/BSC_Swapper.json") as f:
             contract_abi = json.load(f)
         swapper = self.w3.eth.contract(address=swapper_address, abi=contract_abi)
         return swapper_address, swapper
-
 
     def setup_token(self):
         with open("./abis/bep20_abi_token.json") as f:
@@ -76,23 +71,22 @@ class TXN():
     def get_token_balance(self): 
         return self.token_contract.functions.balanceOf(self.address).call() / (10 ** self.token_contract.functions.decimals().call())
 
-
     def checkToken(self):
-        tokenInfos = self.swapper.functions.getTokenInfos(self.token_address).call()
+        tokenInfos = self.swapper.functions.getTokenInformations(self.token_address).call()
         buy_tax = round((tokenInfos[0] - tokenInfos[1]) / tokenInfos[0] * 100) 
         sell_tax = round((tokenInfos[2] - tokenInfos[3]) / tokenInfos[2] * 100)
         if tokenInfos[5] and tokenInfos[6] == True:
             honeypot = False
         else:
             honeypot = True
+        print("\nCurrent Token BuyTax:",buy_tax, "Current Token SellTax:"sell_tax)
         return buy_tax, sell_tax, honeypot
 
 
     def checkifTokenBuyDisabled(self):
-        disabled = self.swapper.functions.getTokenInfos(self.token_address).call()[4] #True if Buy is enabled, False if Disabled.
+        disabled = self.swapper.functions.getTokenInformations(self.token_address).call()[4] #True if Buy is enabled, False if Disabled.
         #todo: find a solution for bugged tokens that never can be buy.
         return disabled
-
 
     def estimateGas(self, txn):
         gas = self.w3.eth.estimateGas({
@@ -110,7 +104,7 @@ class TXN():
 
 
     def getOutputfromBNBtoToken(self):
-        call = self.swapper.functions.getOutputfromBNBtoToken(
+        call = self.swapper.functions.getOutputfromETHtoToken(
             self.token_address,
             int(self.quantity * (10**18)),
             ).call()
@@ -120,7 +114,7 @@ class TXN():
 
 
     def getOutputfromTokentoBNB(self):
-        call = self.swapper.functions.getOutputfromTokentoBNB(
+        call = self.swapper.functions.getOutputfromTokentoETH(
             self.token_address,
             int(self.token_contract.functions.balanceOf(self.address).call()),
             ).call()
@@ -131,7 +125,7 @@ class TXN():
 
     def buy_token(self):
         self.quantity = Decimal(self.quantity) * (10**18)
-        txn = self.swapper.functions.fromBNBtoToken(
+        txn = self.swapper.functions.fromETHtoToken(
             self.address,
             self.token_address,
             self.slippage
@@ -190,10 +184,10 @@ class TXN():
 
     def sell_tokens(self):
         self.approve()
-        txn = self.swapper.functions.fromTokentoBNB(
+        txn = self.swapper.functions.fromTokentoETH(
             self.address,
             self.token_address,
-            int(self.token_contract.functions.balanceOf(self.address).call() - 1), # Only a test, because some users have TransferFrom error, but i think its comes from Slippage.
+            int(self.token_contract.functions.balanceOf(self.address).call()),
             self.slippage
         ).buildTransaction(
             {'from': self.address, 
