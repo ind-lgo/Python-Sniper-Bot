@@ -1,5 +1,5 @@
 from txns import TXN
-import argparse, math, sys, json, requests
+import argparse, json
 from time import sleep
 from halo import Halo
 from style import style
@@ -14,6 +14,7 @@ ascii = """
 """
 
 spinneroptions = {'interval': 250,'frames': ['🚀 ', '🌙 ', '🚀 ', '🌕 ', '💸 ']}
+
 parser = argparse.ArgumentParser(description='Set your Token and Amount example: "sniper.py -t 0x34faa80fec0233e045ed4737cc152a71e490e2e3 -a 0.2 -s 15"')
 parser.add_argument('-t', '--token', help='str, Token for snipe e.g. "-t 0x34faa80fec0233e045ed4737cc152a71e490e2e3"')
 parser.add_argument('-a', '--amount',default=0, help='float, Amount in Bnb to snipe e.g. "-a 0.1"')
@@ -67,14 +68,16 @@ class SniperBot():
         if self.token == None:
             print(style.RED+"Please Check your Token argument e.g. -t 0x34faa80fec0233e045ed4737cc152a71e490e2e3")
             print("exit!")
-            sys.exit()
+            raise SystemExit
+
         self.amount = args.amount
         if args.nobuy != True:  
             if not args.sellonly: 
                 if self.amount == 0:
                     print(style.RED+"Please Check your Amount argument e.g. -a 0.01")
                     print("exit!")
-                    sys.exit()
+                    raise SystemExit
+
         self.tx = args.txamount
         self.amountForSnipe = float(self.amount) / float(self.tx)
         self.hp = args.honeypot
@@ -114,7 +117,7 @@ class SniperBot():
             spinner.stop()
             print(tx[1])
             if tx[0] != True:
-                sys.exit() 
+                raise SystemExit
 
     def awaitSell(self):
         spinner = Halo(text='await Sell', spinner=spinneroptions)
@@ -124,7 +127,7 @@ class SniperBot():
         spinner.stop()
         print(tx[1])
         if tx[0] != True:
-            sys.exit() 
+            raise SystemExit 
 
 
     def awaitApprove(self):
@@ -135,7 +138,7 @@ class SniperBot():
         spinner.stop()
         print(tx[1])
         if tx[0] != True:
-            sys.exit() 
+            raise SystemExit 
 
 
     def awaitBlocks(self):
@@ -162,10 +165,16 @@ class SniperBot():
             except Exception as e:
                 if "UPDATE" in str(e):
                     print(e)
-                    sys.exit()
+                    raise SystemExit
                 continue
         print(style().GREEN+"[DONE] Liquidity is Added!"+ style().RESET)
 
+    def fetchLiquidity(self):
+        liq = self.TXN.getLiquidityBNB()[1]
+        print(style().GREEN+"[LIQUIDTY] Current Token Liquidity:",round(liq,3),"BNB"+ style().RESET)
+        if float(liq) < float(self.settings["MinLiquidityBNB"]):
+            return False
+        return True
 
     def awaitEnabledBuy(self):
         spinner = Halo(text='await Dev Enables Swapping', spinner=spinneroptions)
@@ -179,7 +188,7 @@ class SniperBot():
             except Exception as e:
                 if "UPDATE" in str(e):
                     print(e)
-                    sys.exit()
+                    raise SystemExit
                 continue
         print(style().GREEN+"[DONE] Swapping is Enabeld!"+ style().RESET)
     
@@ -231,14 +240,14 @@ class SniperBot():
             inp = input("please confirm y/n\n")
             if inp.lower() == "y": 
                 print(self.TXN.sell_tokens()[1])
-                sys.exit()
+                raise SystemExit
             else:
-                sys.exit()
+                raise SystemExit
 
         if args.buyonly:
             print(f"Start BuyOnly, buy now with {self.amountForSnipe}BNB tokens!")
             print(self.TXN.buy_token()[1])
-            sys.exit()
+            raise SystemExit
 
         if args.nobuy != True:
             self.awaitLiquidity()
@@ -250,20 +259,21 @@ class SniperBot():
             print(style().YELLOW +"Checking Token is Honeypot..." + style().RESET)
             if honeyTax[2] == True:
                 print(style.RED + "Token is Honeypot, exiting")
-                sys.exit() 
+                raise SystemExit
             elif honeyTax[2] == False:
                 print(style().GREEN +"[DONE] Token is NOT a Honeypot!" + style().RESET)
         if honeyTax[1] > self.settings["MaxSellTax"]:
             print(style().RED+"Token SellTax exceeds Settings.json, exiting!")
-            sys.exit()
+            raise SystemExit
         if honeyTax[0] > self.settings["MaxBuyTax"]:
             print(style().RED+"Token BuyTax exceeds Settings.json, exiting!")
-            sys.exit()
+            raise SystemExit
         if self.wb != 0: 
             self.awaitBlocks()
 
-        if args.nobuy != True:
-            self.awaitBuy()
+        if self.fetchLiquidity() != False:
+            if args.nobuy != True:
+                self.awaitBuy()
 
         sleep(7) # Give the RPC/WS some time to Index your address nonce, make it higher if " ValueError: {'code': -32000, 'message': 'nonce too low'} "
         self.awaitApprove()
