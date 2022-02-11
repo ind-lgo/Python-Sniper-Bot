@@ -2,7 +2,7 @@
 ![TradingTigers](https://trading-tigers.com/assets/img/TradingTigers.png)  
 Web3 Pancakeswap Sniper && Take Profit/StopLose bot written in python3, Please note the license conditions!
 ### The first Binance Smart Chain sniper bot with Honeypot checker!  
-![Sniper](https://trading-tigers.com/assets/img/preview001.png)  
+![Sniper](https://trading-tigers.com/logos/SniperPreview.png)  
 # Infos
 This Tool only buys/sells with/to BNB but use Multi Hops to get the best Output!
 Attention, You pay [0.7% Tax](https://docs.trading-tigers.com/tokenomics/tokenomics) on your swap amount!
