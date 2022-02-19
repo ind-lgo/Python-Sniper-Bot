@@ -5,7 +5,12 @@ Web3 Pancakeswap Sniper && Take Profit/StopLose bot written in python3, Please n
 ![Sniper](https://trading-tigers.com/logos/preview001.png)  
 # Infos
 This Tool only buys/sells with/to BNB but use Multi Hops to get the best Output!
-Attention, You pay [0.7% Tax](https://docs.trading-tigers.com/tokenomics/tokenomics) on your swap amount!
+Attention, You pay [0.7% Tax](https://docs.trading-tigers.com/tokenomics/tokenomics) on your swap amount!  
+
+### Our bot is available on other blockchains:
+- [FTM](https://github.com/Trading-Tiger/SpookySwap_FTM_Sniper_Bot)
+- [MATIC](https://github.com/erra-tech/Quickswap_MATIC_Sniper_Bot)
+- Soon more!
 
 ### Support Us&You by Buying [TradingTigers Token](https://bscscan.com/token/0x34faa80fec0233e045ed4737cc152a71e490e2e3)  
 ![Sniper](https://trading-tigers.com/logos/preview002.png)  
