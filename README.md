@@ -82,4 +82,4 @@ Here are all options with infos:
 * = require every time its runs!
 ```
 ## Trailing-Stop-Loss:
-<img src="https://i.ytimg.com/vi/dZFb0-fwqOk/maxresdefault.jpg" height="350">
+<img src="https://i.ytimg.com/vi/dZFb0-fwqOk/maxresdefault.jpg" height="380">
