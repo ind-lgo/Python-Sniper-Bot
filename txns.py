@@ -138,7 +138,7 @@ class TXN():
             self.slippage
         ).buildTransaction(
             {'from': self.address, 
-            'gas': 480000,
+            'gas': 5800000,
             'gasPrice': self.gas_price,
             'nonce': self.w3.eth.getTransactionCount(self.address), 
             'value': int(self.quantity)}
@@ -198,7 +198,7 @@ class TXN():
             self.slippage
         ).buildTransaction(
             {'from': self.address, 
-            'gas': 550000,
+            'gas': 5500000,
             'gasPrice': self.gas_price,
             'nonce': self.w3.eth.getTransactionCount(self.address), 
             'value': 0}
