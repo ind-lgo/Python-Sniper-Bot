@@ -4,7 +4,7 @@ Web3 Pancakeswap Sniper && Take Profit/StopLose bot written in python3, Please n
 ### The first Binance Smart Chain sniper bot with Honeypot checker!  
 ![Sniper](https://trading-tigers.com/logos/preview001.png)  
 # Infos
-This Tool only buys/sells with/to BNB but use Multi Hops to get the best Output!
+This Tool only buys/sells with/to BNB but it use Multi Hops to get allways the best Output!  
 Attention, You pay [0.77% Tax](https://docs.trading-tigers.com/tokenomics/tokenomics) on your swap amount!  
 
 # SUPPORT & HELP
@@ -57,10 +57,11 @@ python Sniper.py -t <TOKEN_ADDRESS> -a <AMOUNT> -tx <TXAMOUNT> -hp -wb <BLOCKS W
 python Sniper.py -t 0x34faa80fec0233e045ed4737cc152a71e490e2e3 -a 0.001 -tx 2 -hp  -wb 10 -tp 50
 python Sniper.py -t 0x34faa80fec0233e045ed4737cc152a71e490e2e3 --sellonly
 python Sniper.py -t 0x34faa80fec0233e045ed4737cc152a71e490e2e3 -a 0.001 --buyonly
-python Sniper.py -t 0x34faa80fec0233e045ed4737cc152a71e490e2e3 -tsl 10 -nb
+python Sniper.py -t 0x34faa80fec0233e045ed4737cc152a71e490e2e3 -tsl 10 -tp 10 -sl 10 -nb
 ```  
 
 Here are all options with infos:  
+All values of the TakeProfit, StopLoss and TrailingStoploss are in percent.
 ```python3
 *'-t' or '--token', Token for snipe e.g. "-t 0x34faa80fec0233e045ed4737cc152a71e490e2e3"
 '-a' or '--amount', float, Amount in Bnb to snipe e.g. "-a 0.1"
