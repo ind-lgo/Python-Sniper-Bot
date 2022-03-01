@@ -14,8 +14,9 @@ Visit our community for help or questions, on Discord or Github you can open tic
 
 
 ### Our bot is available on other blockchains:
-- [FTM](https://github.com/Trading-Tiger/SpookySwap_FTM_Sniper_Bot)
-- [MATIC](https://github.com/erra-tech/Quickswap_MATIC_Sniper_Bot)
+- [FTM - SpookySwap](https://github.com/Trading-Tiger/SpookySwap_FTM_Sniper_Bot)
+- [MATIC - QuickSwap](https://github.com/erra-tech/Quickswap_MATIC_Sniper_Bot)
+- [AVAX - TraderJoe](https://github.com/Trading-Tiger/TraderJoe_Avax_Sniper_Bot)
 - Soon more!
 
 ### Support Us&You by Buying [TradingTigers Token](https://bscscan.com/token/0x34faa80fec0233e045ed4737cc152a71e490e2e3)  
