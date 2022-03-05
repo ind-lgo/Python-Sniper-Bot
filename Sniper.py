@@ -29,10 +29,10 @@ parser.add_argument('-sl', '--stoploss', default=0, nargs="?", const=True, type=
 parser.add_argument('-tsl', '--trailingstoploss', default=0, nargs="?", const=True, type=int, help='int, Percentage Trailing-Stop-loss from your first Quote "-tsl 50" ')
 parser.add_argument('-wb', '--awaitBlocks', default=0, nargs="?", const=True, type=int, help='int, Await Blocks before sending BUY Transaction "-ab 50" ')
 parser.add_argument('-cmt', '--checkMaxTax',  action="store_true", help='get Token Tax and check if its higher.')
-parser.add_argument('-cc', '--checkcontract',  action="store_true", help='Buy Tokens with from your given amount')
+parser.add_argument('-cc', '--checkcontract',  action="store_true", help='Check is Contract Verified and Look for some Functions.')
 parser.add_argument('-so', '--sellonly',  action="store_true", help='Sell all your Tokens from given address')
 parser.add_argument('-bo', '--buyonly',  action="store_true", help='Buy Tokens with from your given amount')
-parser.add_argument('-lc', '--liquiditycheck',  action="store_true", help='With this arg you use liquidityCheck')
+parser.add_argument('-cl', '--checkliquidity',  action="store_true", help='with this arg you use liquidityCheck')
 parser.add_argument('-dsec', '--DisabledSwapEnabledCheck',  action="store_true", help='this argument disabled the SwapEnabled Check!')
 args = parser.parse_args()
 
@@ -50,7 +50,8 @@ class SniperBot():
         return settings
 
     def SayWelcome(self):
-        print(style().GREEN +"""Attention, You pay a 0.7% Tax on your swap amount!"""+ style().RESET)
+        print(style().YELLOW + ascii+ style().RESET)
+        print(style().GREEN +"""Attention, You pay a 0.77% Tax on your swap amount!"""+ style().RESET)
         print(style().GREEN +"Start Sniper Tool with following arguments:"+ style().RESET)
         print(style().BLUE + "---------------------------------"+ style().RESET)
         print(style().YELLOW + "Amount for Buy:",style().GREEN + str(self.amount) + " BNB"+ style().RESET)
@@ -66,6 +67,7 @@ class SniperBot():
             print(style().YELLOW + "Stop loss Percent :",style().GREEN + str(self.sl)+ style().RESET)
         print(style().BLUE + "---------------------------------"+ style().RESET)
         
+
     def parseArgs(self):
         self.token = args.token
         if self.token == None:
@@ -88,7 +90,7 @@ class SniperBot():
         self.tp = args.takeprofit
         self.sl = args.stoploss 
         self.tsl = args.trailingstoploss
-        self.lc = args.skipliquiditycheck
+        self.cl = args.checkliquidity
         self.stoploss = 0
         self.takeProfitOutput = 0
 
@@ -151,28 +153,38 @@ class SniperBot():
         spinner.start()
         waitForBlock = self.TXN.getBlockHigh() + self.wb
         while True:
-            sleep(0.3)
+            sleep(0.13)
             if self.TXN.getBlockHigh() > waitForBlock:
                 spinner.stop()
                 break
         print(style().GREEN+"[DONE] Wait Blocks finish!")
         
+
     def CheckVerifyCode(self):
-        getsourcecode = requests.get(f"https://api.bscscan.com/api?module=contract&action=getsourcecode&address={self.token}&apikey=YourApiKeyToken").text.upper()
-        if not "CONTRACT SOURCE CODE NOT VERIFIED".upper() in getsourcecode:
-            if "Accounting".upper() in getsourcecode:
-                print(style().RED+"[CheckContract] FOUND Accounting, Looks Like Honeypot!")
+        while True:
+            req = requests.get(f"https://api.bscscan.com/api?module=contract&action=getsourcecode&address={self.token}&apikey=YourApiKeyToken")
+            if req.status_code == 200:
+                getsourcecode = req.text.lower()
+                jsonSource = json.loads(getsourcecode)
+                if not "MAX RATE LIMIT REACHED".lower() in str(jsonSource["result"]).lower():
+                    if not "NOT VERIFIED".lower() in str(jsonSource["result"]).lower():
+                        print("[CheckContract] IS Verfied")
+                        for BlackWord in self.settings["cc_BlacklistWords"]:
+                            if BlackWord.lower() in getsourcecode:
+                                print(style().RED+f"[CheckContract] BlackWord {BlackWord} FOUND, Exit!")
+                                raise SystemExit
+                        print(style().GREEN+"[CheckContract] No known abnormalities found.")
+                        break
+                    else:
+                        print(style().RED+"[CheckContract] Code Not Verfied, Can't check, Exit!")
+                        raise SystemExit
+                else:
+                    print("Max Request Rate Reached, Sleep 5sec.")
+                    sleep(5)
+                    continue
+            else:
+                print("BSCScan.org Request Faild, Exiting.")
                 raise SystemExit
-    
-            elif "allowed[from][msg.sender]".upper() in getsourcecode:
-                print(style().RED+"[CheckContract] FOUND allowed, Looks Like Honeypot!")
-                raise SystemExit
-    
-            print(style().GREEN+"[CheckContract] No known abnormalities found.")
-    
-        else:
-            print(style().RED+"[CheckContract] Can not look, token not verified.")
-            raise SystemExit
 
 
     def awaitLiquidity(self):
@@ -223,9 +235,10 @@ class SniperBot():
         if self.sl != 0:
             self.stoploss = self.calcloss()
         TokenBalance = round(self.TXN.get_token_balance(),5)
-        while True:
+        time = 300
+        while time:
             try:
-                sleep(0.3)
+                sleep(0.9)
                 LastPrice = float(self.TXN.getOutputfromTokentoBNB()[0] / (10**18))
                 if self.tsl != 0:
                     if LastPrice > highestLastPrice:
@@ -315,7 +328,7 @@ class SniperBot():
         if self.wb != 0: 
             self.awaitBlocks()
 
-        if self.lc == True:
+        if self.cl == True:
             if self.fetchLiquidity() != False:
                 pass
             
@@ -328,6 +341,6 @@ class SniperBot():
         if self.tsl != 0 or self.tp != 0 or self.sl != 0:
             self.awaitMangePosition()
 
-        print(style().GREEN + "[DONE] TradingTigers Sniper Bot finish!" + style().RESET)
+    print(style().GREEN + "[DONE] TradingTigers Sniper Bot finish!" + style().RESET)
 
 SniperBot().StartUP()

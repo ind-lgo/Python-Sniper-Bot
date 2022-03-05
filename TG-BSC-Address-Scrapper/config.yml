@@ -1,0 +1,39 @@
+
+
+#Many users have asked for a Telegram Scrap bot, here it is.
+#Just enter your desired channel in config.yml and create an Api_hash from your Telegram account.
+
+#Random Session name
+session_name: BSC_ADDRESS_Scrapper
+
+#Api number from https://my.telegram.org/auth?to=apps
+session_api: 
+
+#Api Hash from https://my.telegram.org/auth?to=apps
+session_api_hash: 
+
+#Address need be the same as in the settings.json!
+BNB_ADDRESS: "0x00000000000000000"
+
+# % amount To take from Address for invest in Tokens.
+Percent_Amount_for_Buy: 15
+
+# 0 If note use for TP/SL/TSL
+# Take Profit Percentage
+TP: 100 
+
+# Stop Loss, Percentage
+SL: 15 
+
+# Trailing Stop Loss, Percentage
+TSL: 25
+
+#Channel Name One is Required and you need to be on the Channel with your Telegram Account.
+channel_names:
+  - 'DEXT Live New Pairs Bot [BSC / Binance Smart Chain]'
+
+#Channel ID
+channel_ids:
+  - 1179431786
+
+input_channel_ids: []
