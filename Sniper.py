@@ -1,3 +1,4 @@
+import requests
 from txns import TXN
 import argparse, json
 from time import sleep
@@ -27,8 +28,11 @@ parser.add_argument('-tp', '--takeprofit', default=0, nargs="?", const=True, typ
 parser.add_argument('-sl', '--stoploss', default=0, nargs="?", const=True, type=int, help='int, Percentage Stop loss from your input BNB amount "-sl 50" ')
 parser.add_argument('-tsl', '--trailingstoploss', default=0, nargs="?", const=True, type=int, help='int, Percentage Trailing-Stop-loss from your first Quote "-tsl 50" ')
 parser.add_argument('-wb', '--awaitBlocks', default=0, nargs="?", const=True, type=int, help='int, Await Blocks before sending BUY Transaction "-ab 50" ')
+parser.add_argument('-cmt', '--checkMaxTax',  action="store_true", help='get Token Tax and check if its higher.')
+parser.add_argument('-cc', '--checkcontract',  action="store_true", help='Buy Tokens with from your given amount')
 parser.add_argument('-so', '--sellonly',  action="store_true", help='Sell all your Tokens from given address')
 parser.add_argument('-bo', '--buyonly',  action="store_true", help='Buy Tokens with from your given amount')
+parser.add_argument('-lc', '--liquiditycheck',  action="store_true", help='With this arg you use liquidityCheck')
 parser.add_argument('-dsec', '--DisabledSwapEnabledCheck',  action="store_true", help='this argument disabled the SwapEnabled Check!')
 args = parser.parse_args()
 
@@ -46,7 +50,6 @@ class SniperBot():
         return settings
 
     def SayWelcome(self):
-        print(style().YELLOW + ascii+ style().RESET)
         print(style().GREEN +"""Attention, You pay a 0.7% Tax on your swap amount!"""+ style().RESET)
         print(style().GREEN +"Start Sniper Tool with following arguments:"+ style().RESET)
         print(style().BLUE + "---------------------------------"+ style().RESET)
@@ -55,7 +58,6 @@ class SniperBot():
         print(style().YELLOW + "Transaction to send:",style().GREEN + str(self.tx)+ style().RESET)
         print(style().YELLOW + "Amount per transaction :",style().GREEN + str("{0:.8f}".format(self.amountForSnipe))+ style().RESET)
         print(style().YELLOW + "Await Blocks before buy :",style().GREEN + str(self.wb)+ style().RESET)
-
         if self.tsl != 0:
             print(style().YELLOW + "Trailing Stop loss Percent :",style().GREEN + str(self.tsl)+ style().RESET)
         if self.tp != 0:
@@ -86,6 +88,7 @@ class SniperBot():
         self.tp = args.takeprofit
         self.sl = args.stoploss 
         self.tsl = args.trailingstoploss
+        self.lc = args.skipliquiditycheck
         self.stoploss = 0
         self.takeProfitOutput = 0
 
@@ -93,7 +96,6 @@ class SniperBot():
     def calcProfit(self):
         if self.amountForSnipe == 0.0:
             self.amountForSnipe = self.TXN.getOutputfromTokentoBNB()[0] / (10**18)
-
         a = ((self.amountForSnipe * self.tx) * self.tp) / 100
         b = a + (self.amountForSnipe * self.tx)
         return b 
@@ -102,7 +104,6 @@ class SniperBot():
     def calcloss(self):
         if self.amountForSnipe == 0.0:
             self.amountForSnipe = self.TXN.getOutputfromTokentoBNB()[0] / (10**18)
-
         a = ((self.amountForSnipe * self.tx) * self.sl) / 100
         b = (self.amountForSnipe * self.tx) - a
         return b 
@@ -112,7 +113,6 @@ class SniperBot():
         a = (currentPrice  * self.tsl) / 100
         b = currentPrice - a
         return b
-
 
     def awaitBuy(self):
         spinner = Halo(text='await Buy', spinner='dots')
@@ -126,7 +126,6 @@ class SniperBot():
             if tx[0] != True:
                 raise SystemExit
 
-
     def awaitSell(self):
         spinner = Halo(text='await Sell', spinner='dots')
         spinner.start()
@@ -136,8 +135,6 @@ class SniperBot():
         print(tx[1])
         if tx[0] != True:
             raise SystemExit 
-
-
 
     def awaitApprove(self):
         spinner = Halo(text='await Approve', spinner='dots')
@@ -149,19 +146,33 @@ class SniperBot():
         if tx[0] != True:
             raise SystemExit 
 
-
-
     def awaitBlocks(self):
         spinner = Halo(text='await Blocks', spinner='dots')
         spinner.start()
         waitForBlock = self.TXN.getBlockHigh() + self.wb
         while True:
-            sleep(0.13)
+            sleep(0.3)
             if self.TXN.getBlockHigh() > waitForBlock:
                 spinner.stop()
                 break
         print(style().GREEN+"[DONE] Wait Blocks finish!")
         
+    def CheckVerifyCode(self):
+        getsourcecode = requests.get(f"https://api.bscscan.com/api?module=contract&action=getsourcecode&address={self.token}&apikey=YourApiKeyToken").text.upper()
+        if not "CONTRACT SOURCE CODE NOT VERIFIED".upper() in getsourcecode:
+            if "Accounting".upper() in getsourcecode:
+                print(style().RED+"[CheckContract] FOUND Accounting, Looks Like Honeypot!")
+                raise SystemExit
+    
+            elif "allowed[from][msg.sender]".upper() in getsourcecode:
+                print(style().RED+"[CheckContract] FOUND allowed, Looks Like Honeypot!")
+                raise SystemExit
+    
+            print(style().GREEN+"[CheckContract] No known abnormalities found.")
+    
+        else:
+            print(style().RED+"[CheckContract] Can not look, token not verified.")
+            raise SystemExit
 
 
     def awaitLiquidity(self):
@@ -180,14 +191,13 @@ class SniperBot():
                 continue
         print(style().GREEN+"[DONE] Liquidity is Added!"+ style().RESET)
 
-
     def fetchLiquidity(self):
         liq = self.TXN.getLiquidityBNB()[1]
         print(style().GREEN+"[LIQUIDTY] Current Token Liquidity:",round(liq,3),"BNB"+ style().RESET)
         if float(liq) < float(self.settings["MinLiquidityBNB"]):
-            return False
+            print(style.RED+"[LIQUIDTY] <- TO SMALL, EXIT!")
+            raise SystemExit
         return True
-
 
     def awaitEnabledBuy(self):
         spinner = Halo(text='await Dev Enables Swapping', spinner='dots')
@@ -248,9 +258,11 @@ class SniperBot():
                 if self.tsl != 0:  
                     msg = msg + "| Trailing Stop loss below: " + str("{0:.7f}".format(TrailingStopLoss)) + "BNB"
                 print(msg, end="\r")
+                
             except Exception as e:
                 print(e)
                 sleep(5)
+
         print(style().GREEN+"[DONE] Position Manager Finished!"+ style().RESET)
 
 
@@ -280,30 +292,35 @@ class SniperBot():
             if args.DisabledSwapEnabledCheck != True:
                 self.awaitEnabledBuy()
 
+        if args.checkcontract:
+            self.CheckVerifyCode()
+
         honeyTax = self.TXN.checkToken()
         if self.hp == True:
-            print(style().YELLOW +"Checking Token is Honeypot..." + style().RESET)
+            print(style().YELLOW +"Checking Token..." + style().RESET)
             if honeyTax[2] == True:
                 print(style.RED + "Token is Honeypot, exiting")
                 raise SystemExit
-
             elif honeyTax[2] == False:
                 print(style().GREEN +"[DONE] Token is NOT a Honeypot!" + style().RESET)
 
-        if honeyTax[1] > self.settings["MaxSellTax"]:
-            print(style().RED+"Token SellTax exceeds Settings.json, exiting!")
-            raise SystemExit
-
-        if honeyTax[0] > self.settings["MaxBuyTax"]:
-            print(style().RED+"Token BuyTax exceeds Settings.json, exiting!")
-            raise SystemExit
+        if args.checkMaxTax == True:
+            if honeyTax[1] > self.settings["MaxSellTax"]:
+                print(style().RED+"Token SellTax exceeds Settings.json, exiting!")
+                raise SystemExit
+            if honeyTax[0] > self.settings["MaxBuyTax"]:
+                print(style().RED+"Token BuyTax exceeds Settings.json, exiting!")
+                raise SystemExit
 
         if self.wb != 0: 
             self.awaitBlocks()
 
-        if self.fetchLiquidity() != False:
-            if args.nobuy != True:
-                self.awaitBuy()
+        if self.lc == True:
+            if self.fetchLiquidity() != False:
+                pass
+            
+        if args.nobuy != True:
+            self.awaitBuy()
 
         sleep(7) # Give the RPC/WS some time to Index your address nonce, make it higher if " ValueError: {'code': -32000, 'message': 'nonce too low'} "
         self.awaitApprove()
