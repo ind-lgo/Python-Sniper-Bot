@@ -8,9 +8,8 @@ This Tool only buys/sells with/to BNB but it use Multi Hops to get allways the b
 Attention, You pay [0.77% Tax](https://docs.trading-tigers.com/tokenomics/tokenomics) on your swap amount!  
 
 # SUPPORT & HELP
-Visit our community for help or questions, on Discord or Github you can open tickets!
-<div><a href="https://discord.gg/Qc6y9kyCgU" > <img src="https://trading-tigers.com/logos/joinDiscord.png" height="80"></a>&nbsp;&nbsp;&nbsp;&nbsp;
-<a href="https://t.me/TradingTigersChat" > <img src="https://trading-tigers.com/logos/joinTelegram.png" height="80"></a>
+Visit our community for help or questions, on Discord or Github you can open tickets/issues!
+<div><a href="https://discord.gg/Qc6y9kyCgU" > <img src="https://trading-tigers.com/logos/joinDiscord.png" height="80"></a>
 
 
 ### Our bot is available on other blockchains:
