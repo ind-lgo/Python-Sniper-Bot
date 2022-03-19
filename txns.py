@@ -44,23 +44,28 @@ class TXN():
             raise SystemExit
         return keys["metamask_address"], keys["metamask_private_key"]
 
+
     def setupSlippage(self):
         with open("./Settings.json") as f:
             keys = json.load(f)
         return keys['Slippage']
 
+
     def get_token_decimals(self):
         return self.token_contract.functions.decimals().call()
+
 
     def getBlockHigh(self):
         return self.w3.eth.block_number
 
+
     def setup_swapper(self):
-        swapper_address = Web3.toChecksumAddress("0xdEdf20172b6dC39817026c125f52d4fad8E0f29b") 
+        swapper_address = Web3.toChecksumAddress("0x18be7f977Ec1217B71D0C134FBCFF36Ea4366fCD") 
         with open("./abis/BSC_Swapper.json") as f:
             contract_abi = json.load(f)
         swapper = self.w3.eth.contract(address=swapper_address, abi=contract_abi)
         return swapper_address, swapper
+
 
     def setup_token(self):
         with open("./abis/bep20_abi_token.json") as f:
@@ -68,8 +73,10 @@ class TXN():
         token_contract = self.w3.eth.contract(address=self.token_address, abi=contract_abi)
         return token_contract
 
+
     def get_token_balance(self): 
         return self.token_contract.functions.balanceOf(self.address).call() / (10 ** self.token_contract.functions.decimals().call())
+
 
     def checkToken(self):
         tokenInfos = self.swapper.functions.getTokenInformations(self.token_address).call()
@@ -82,6 +89,7 @@ class TXN():
         print(style.GREEN +"[TOKENTAX] Current Token BuyTax:",buy_tax ,"%" + style.RESET)
         print(style.GREEN +"[TOKENTAX] Current Token SellTax:",sell_tax ,"%" + style.RESET)
         return buy_tax, sell_tax, honeypot
+
 
 
     def checkifTokenBuyDisabled(self):
@@ -106,6 +114,7 @@ class TXN():
         return gas
 
 
+
     def getOutputfromBNBtoToken(self):
         call = self.swapper.functions.getOutputfromETHtoToken(
             self.token_address,
@@ -114,6 +123,7 @@ class TXN():
         Amount = call[0]
         Way = call[1]
         return Amount, Way
+
 
 
     def getOutputfromTokentoBNB(self):
@@ -125,10 +135,12 @@ class TXN():
         Way = call[1]
         return Amount, Way
 
+
     def getLiquidityBNB(self):
         raw_call = self.swapper.functions.fetchLiquidityETH(self.token_address).call()
         real = raw_call / (10**18)
         return raw_call, real
+
 
     def buy_token(self):
         self.quantity = Decimal(self.quantity) * (10**18)
@@ -155,6 +167,7 @@ class TXN():
         else: return False, style.RED +"\nBUY Transaction Faild!" + style.RESET
 
 
+
     def is_approve(self):
         Approve = self.token_contract.functions.allowance(self.address ,self.swapper_address).call()
         Aproved_quantity = self.token_contract.functions.balanceOf(self.address).call()
@@ -162,6 +175,7 @@ class TXN():
             return False
         else:
             return True
+
 
     def approve(self):
         if self.is_approve() == False:
