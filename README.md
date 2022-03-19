@@ -19,7 +19,7 @@ Visit our community for help or questions, on Discord or Github you can open tic
 - Soon more!
 
 ### Support Us&You by Buying [TradingTigers Token](https://bscscan.com/token/0x34faa80fec0233e045ed4737cc152a71e490e2e3)  
-![Sniper](https://trading-tigers.com/logos/preview002.png)  
+![Sniper](https://trading-tigers.com/logos/preview003.png)  
 
 # Download
 ### If you are not familiar with Python please have a look at [Releases](https://github.com/Trading-Tiger/Pancakeswap_BSC_Sniper_Bot/releases), there you can download Windows executable.
